@@ -1,0 +1,42 @@
+generated: '2026-07-24'
+method: searched
+source: openapi/volt-io-accounts-openapi-original.yaml + docs.volt.io/api-reference/api-idempotency
+authentication:
+  style: oauth2-bearer
+  detail: >-
+    OAuth2 access token obtained via POST /oauth on the gateway (client_id,
+    client_secret + username/password resource-owner grant); the JWT is sent as
+    an Authorization Bearer token on every API call.
+  see: authentication/volt-io-authentication.yml
+idempotency:
+  supported: true
+  header: Idempotency-Key
+  scope: all POST requests that create a resource
+  recommended_value: UUID (any unique identifier accepted)
+  on_replay: 409 Conflict when the same Idempotency-Key was already processed
+  docs: https://docs.volt.io/api-reference/api-idempotency
+pagination:
+  style: page-number
+  request_params: [page, limit]
+  response_headers: [page, limit, page-count, total-items]
+sorting:
+  param_pattern: 'order[<field>]'
+  example: 'order[createdAt] = ASC | DESC (desc by default)'
+case_sensitivity:
+  payload_keys: case-sensitive
+  http_header_names: case-insensitive
+request_signing:
+  scheme: JWS (JSON Web Signature)
+  applies_to: outgoing payments from Volt Accounts
+  docs: https://docs.volt.io/implementation/accounts/outgoing-payments/signing-request
+error_envelope:
+  media_type: application/json
+  shape: Error<status>Response objects; 422 carries typed field validation constraints
+  see: errors/volt-io-problem-types.yml
+webhooks:
+  signing: HMAC SHA256
+  see: asyncapi/volt-io-webhooks.yml
+rate_limiting:
+  signal: none documented in the Accounts OpenAPI
+versioning:
+  see: lifecycle/volt-io-lifecycle.yml

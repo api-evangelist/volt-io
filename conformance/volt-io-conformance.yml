@@ -1,0 +1,39 @@
+generated: '2026-07-24'
+method: derived
+source: openapi/volt-io-accounts-openapi-original.yaml + docs.volt.io + volt.io/compliance
+notes: >-
+  Standards conformance derived from the Volt Accounts OpenAPI and Volt's
+  documented posture. Volt is an FCA-authorised payment institution operating on
+  PSD2 / open-banking rails; it publishes a dedicated compliance page.
+standards:
+- id: oauth2
+  conforms: true
+  evidence: Gateway issues OAuth2 access tokens (POST /oauth); Accounts API secured by Bearer JWT
+- id: bearer-jwt
+  conforms: true
+  evidence: securitySchemes BearerAuth type http scheme bearer bearerFormat JWT
+- id: rfc9457-problem-details
+  conforms: false
+  evidence: Errors returned as application/json Error4xxResponse objects, not application/problem+json
+- id: idempotency-key
+  conforms: true
+  evidence: Idempotency-Key HTTP header required on POST creates; duplicate key returns 409 Conflict
+- id: pagination
+  conforms: true
+  evidence: page-based pagination via page / limit / page-count / total-items response headers
+- id: psd2-open-banking
+  conforms: true
+  evidence: Account-to-account payment initiation over UK Open Banking / SEPA / Pix / PayTo rails; FCA-authorised
+- id: jws-request-signing
+  conforms: true
+  evidence: Outgoing payments support JWS (JSON Web Signature) request signing per docs
+- id: hmac-webhook-signing
+  conforms: true
+  evidence: Webhook notifications signed with HMAC SHA256 (docs.volt.io/implementation/webhooks/signature-verification)
+- id: iso20022-iban
+  conforms: true
+  evidence: Account identifiers use IBAN + SWIFT/BIC and account-number/sort-code structures
+- id: fhir-r4
+  conforms: false
+- id: scim2
+  conforms: false

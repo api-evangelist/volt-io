@@ -1,0 +1,25 @@
+generated: '2026-07-24'
+method: searched
+source: openapi/volt-io-accounts-openapi-original.yaml
+docs: https://docs.volt.io/implementation/essentials/authentication
+summary:
+  types:
+  - http
+  - oauth2
+  api_key_in: []
+  oauth2_flows:
+  - password
+token_flow:
+  grant: resource-owner-password (OAuth2)
+  token_endpoint: POST https://gateway.volt.io/oauth
+  inputs: [client_id, client_secret, username, password]
+  credential_source: Fuzebox (application registration + API credentials)
+  returns: Bearer access_token (JWT)
+  usage: 'Authorization: Bearer <access_token> on all API calls'
+schemes:
+- name: BearerAuth
+  type: http
+  scheme: bearer
+  bearerFormat: JWT
+  sources:
+  - openapi/volt-io-accounts-openapi-original.yaml

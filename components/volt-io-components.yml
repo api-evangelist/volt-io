@@ -1,0 +1,26 @@
+generated: '2026-07-24'
+method: searched
+source: docs.volt.io
+notes: >-
+  Volt ships hosted and embeddable payment surfaces distinct from server-side
+  SDKs: a hosted checkout page, mobile checkout components, and Pay by Link.
+families:
+- name: Hosted Checkout
+  kind: hosted-page
+  description: Volt-hosted payment page; redirect the shopper to complete an open-banking payment.
+  docs: https://docs.volt.io/implementation/payments/integration-overview/hosted-checkout
+- name: Mobile SDK components (VoltCheckout)
+  kind: mobile-embedded
+  description: Native iOS + Android components that render the full open-banking payment flow inside your app.
+  docs: https://docs.volt.io/implementation/payments/integration-overview/mobile-sdk
+  loaders:
+  - https://github.com/volt-io/checkout-ios-sdk
+  - https://github.com/volt-io/android-sdk
+- name: Pay by Link
+  kind: hosted-link
+  description: Secure hosted payment links sent over any channel; generate from Fuzebox or API.
+  docs: https://docs.volt.io/implementation/power-tools/pay-by-link
+- name: E-commerce plugins
+  kind: platform-embedded
+  description: Prebuilt checkout for Shopify, Shopware, WooCommerce, Magento, PrestaShop and Optty.
+  docs: https://docs.volt.io/implementation/plugins

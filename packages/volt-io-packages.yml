@@ -1,0 +1,58 @@
+generated: '2026-07-24'
+method: searched
+source: https://github.com/volt-io
+notes: >-
+  Volt does not publish general-purpose server-side REST client SDKs in the
+  public language registries (npm/PyPI/Maven/NuGet). Its first-party client
+  distribution is mobile checkout SDKs (iOS + Android) and hosted-commerce
+  platform plugins, all maintained in the github.com/volt-io organization.
+packages:
+- language: swift
+  registry: github
+  name: checkout-ios-sdk (VoltCheckout)
+  url: https://github.com/volt-io/checkout-ios-sdk
+  install: Swift Package Manager - https://github.com/volt-io/checkout-ios-sdk
+  official: true
+  kind: mobile-sdk
+- language: kotlin
+  registry: github
+  name: android-sdk
+  url: https://github.com/volt-io/android-sdk
+  install: Add the Volt Android SDK per docs.volt.io/implementation/mobile-sdk/android/installation
+  official: true
+  kind: mobile-sdk
+- language: php
+  registry: github
+  name: volt-io-woocommerce
+  url: https://github.com/volt-io/volt-io-woocommerce
+  install: Install the Volt Pay by Bank plugin from the WooCommerce/WordPress plugin surface
+  official: true
+  kind: ecommerce-plugin
+- language: php
+  registry: github
+  name: volt-io-magento
+  url: https://github.com/volt-io/volt-io-magento
+  install: composer require (Magento 2 module)
+  official: true
+  kind: ecommerce-plugin
+- language: php
+  registry: github
+  name: volt-io-magento-22
+  url: https://github.com/volt-io/volt-io-magento-22
+  install: Magento 2.2 module
+  official: true
+  kind: ecommerce-plugin
+- language: php
+  registry: github
+  name: volt-io-prestashop
+  url: https://github.com/volt-io/volt-io-prestashop
+  install: Install the Volt.io PrestaShop payment module
+  official: true
+  kind: ecommerce-plugin
+partner_plugins:
+- name: Shopify (Instant Bank Transfer)
+  url: https://docs.volt.io/implementation/plugins/shopify
+- name: Shopware (Pay by Bank)
+  url: https://docs.volt.io/implementation/plugins/shopware
+- name: Optty (BigCommerce / Salesforce Commerce Cloud / WooCommerce / Magento)
+  url: https://docs.volt.io/implementation/plugins/optty

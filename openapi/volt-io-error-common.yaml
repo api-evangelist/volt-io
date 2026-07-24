@@ -1,0 +1,28 @@
+components:
+  schemas:
+    ValidationErrorType:
+      type: string
+      description: |-
+        Type (code) of the constraint that was violated.
+        List of types can be found in [here](https://docs.volt.io/implementation/essentials/error-handling#validation-error-types).
+      enum:
+        - TOO_FEW
+        - TOO_MANY
+        - TOO_LOW
+        - TOO_HIGH
+        - TOO_SHORT
+        - TOO_LONG
+        - NOT_EQUAL
+        - IS_EQUAL
+        - INVALID_FORMAT
+        - INVALID_DATE
+        - INVALID_TIME
+        - INVALID_TYPE
+        - REGEX_FAILED
+        - OUT_OF_RANGE
+        - CHECKSUM_FAILED
+        - NOT_UNIQUE
+        - VALUE_REQUIRED
+        - INVALID_VALUE
+        - MISSING_FIELD
+        - FIELD_NOT_ALLOWED

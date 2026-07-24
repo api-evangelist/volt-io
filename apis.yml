@@ -18,8 +18,11 @@ description: >-
   surface: a public developer portal and OpenAPI-backed API reference at
   docs.volt.io, a single production gateway host (gateway.volt.io) with a
   sandbox, OAuth2 authentication, and webhooks for asynchronous payment events.
-  No downloadable OpenAPI document was published at a fetchable URL as of this
-  review; the reference renders schemas server-side.
+  The docs.volt.io API reference renders schemas server-side, but Volt publishes
+  a real OpenAPI 3.0.1 definition for its Accounts API (virtual IBANs, named
+  accounts, settlement) in the github.com/volt-io/volt-io-accounts repository,
+  and ships first-party mobile checkout SDKs (iOS/Android) plus e-commerce
+  plugins in the same GitHub organization.
 image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
 tags:
 - Payments
@@ -78,7 +81,7 @@ apis:
     collections, payouts and refunds, giving merchants programmatic named
     accounts for receiving and disbursing funds within the Volt network.
   humanURL: https://docs.volt.io/api-reference/accounts
-  baseURL: https://gateway.volt.io
+  baseURL: https://accounts.volt.io
   tags:
   - Volt Accounts
   - Virtual IBAN
@@ -88,6 +91,16 @@ apis:
     url: https://docs.volt.io/implementation/volt-accounts
   - type: APIReference
     url: https://docs.volt.io/api-reference/accounts
+  - type: OpenAPI
+    url: openapi/volt-io-accounts-openapi-original.yaml
+  - type: Overlay
+    url: overlays/volt-io-accounts-overlay.yaml
+  - type: MCPServer
+    url: mcp/volt-io-mcp.yml
+  - type: ToolCrosswalk
+    url: mcp/volt-io-tool-crosswalk.yml
+  - type: DataModel
+    url: data-model/volt-io-data-model.yml
 - aid: volt-io:volt-verify-api
   name: Volt Verify API
   description: >-
@@ -139,6 +152,54 @@ apis:
   - type: APIReference
     url: https://docs.volt.io/api-reference/authentication/post-oauth
 common:
+- type: VulnerabilityDisclosure
+  url: security/volt-io-vulnerability-disclosure.yml
+- type: DomainSecurity
+  url: security/volt-io-domain-security.yml
+- type: AgenticAccess
+  url: agentic-access/volt-io-agentic-access.yml
+- type: Authentication
+  url: authentication/volt-io-authentication.yml
+- type: Security
+  url: https://www.volt.io/.well-known/security.txt
+- type: SecurityTxt
+  url: well-known/volt-io-security.txt
+- type: WellKnown
+  url: well-known/volt-io-well-known.yml
+- type: LLMsTxt
+  url: llms/volt-io-llms.txt
+- type: Packages
+  url: packages/volt-io-packages.yml
+- type: SDKs
+  url: packages/volt-io-packages.yml
+- type: Conventions
+  url: conventions/volt-io-conventions.yml
+- type: Idempotency
+  url: conventions/volt-io-conventions.yml
+- type: ErrorCatalog
+  url: errors/volt-io-problem-types.yml
+- type: Conformance
+  url: conformance/volt-io-conformance.yml
+- type: Compliance
+  url: https://volt.io/compliance/
+- type: Lifecycle
+  url: lifecycle/volt-io-lifecycle.yml
+- type: Deprecation
+  url: https://docs.volt.io/implementation/payments/migration-guide
+- type: Sandbox
+  url: sandbox/volt-io-sandbox.yml
+- type: Components
+  url: components/volt-io-components.yml
+- type: Webhooks
+  url: asyncapi/volt-io-webhooks.yml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: GitHubOrganization
+  url: https://github.com/volt-io
+- type: Pricing
+  url: https://volt.io/pricing/
+- type: SignUp
+  url: https://docs.volt.io/onboarding
 - type: Website
   url: https://volt.io/
 - type: DeveloperPortal

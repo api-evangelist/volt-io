@@ -1,0 +1,78 @@
+generated: '2026-07-24'
+method: derived
+status: candidate
+source: openapi/volt-io-accounts-openapi-original.yaml
+notes: >-
+  No official hosted/remote Volt MCP server was found (no listing in the MCP
+  registry, npm @modelcontextprotocol, or Volt docs as of this review). This is
+  a DERIVED candidate tool list mapped one-to-one from the Volt Accounts API
+  OpenAPI operations; each tool inherits its real inputSchema from the backing
+  operation's parameters + requestBody. Not published by Volt.
+server:
+  name: volt-io-accounts
+  transport: http
+  url: null
+tools:
+- name: list_transactions
+  description: List account transactions with filters and pagination
+  source_operation: openapi/volt-io-accounts-openapi-original.yaml#get-transactions
+- name: get_transaction
+  description: Get details of a single transaction
+  source_operation: openapi/volt-io-accounts-openapi-original.yaml#get-transaction-details
+- name: create_transaction
+  description: Create a transaction (payout / settlement / internal transfer); requires Idempotency-Key
+  source_operation: openapi/volt-io-accounts-openapi-original.yaml#create-transaction
+- name: get_account_holder_verification
+  description: Get account holder verification (VoP/CoP) details
+  source_operation: openapi/volt-io-accounts-openapi-original.yaml#get-account-holder-verification-details
+- name: approve_account_holder_verification
+  description: Approve an account holder verification result
+  source_operation: openapi/volt-io-accounts-openapi-original.yaml#approve-account-holder-verification
+- name: reject_account_holder_verification
+  description: Reject an account holder verification result
+  source_operation: openapi/volt-io-accounts-openapi-original.yaml#reject-account-holder-verification
+- name: list_accounts
+  description: List Volt Accounts
+  source_operation: openapi/volt-io-accounts-openapi-original.yaml#get-accounts
+- name: get_account
+  description: Get details of a single Volt Account
+  source_operation: openapi/volt-io-accounts-openapi-original.yaml#get-account-details
+- name: close_account
+  description: Close a Volt Account
+  source_operation: openapi/volt-io-accounts-openapi-original.yaml#close-account
+- name: list_account_beneficiaries
+  description: List transaction beneficiaries for an account
+  source_operation: openapi/volt-io-accounts-openapi-original.yaml#get-account-beneficiaries
+- name: list_aliases
+  description: List aliases for an account
+  source_operation: openapi/volt-io-accounts-openapi-original.yaml#get-aliases
+- name: order_aliases
+  description: Order new aliases for a Volt Account; requires Idempotency-Key
+  source_operation: openapi/volt-io-accounts-openapi-original.yaml#order-aliases
+- name: get_alias_order_status
+  description: Get the status of an alias order
+  source_operation: openapi/volt-io-accounts-openapi-original.yaml#get-alias-order-status
+- name: get_alias
+  description: Get details of a single alias
+  source_operation: openapi/volt-io-accounts-openapi-original.yaml#get-alias-details
+- name: change_alias_state
+  description: Activate / deactivate an alias
+  source_operation: openapi/volt-io-accounts-openapi-original.yaml#change-alias-state
+- name: close_alias
+  description: Close an alias
+  source_operation: openapi/volt-io-accounts-openapi-original.yaml#close-alias
+- name: list_trusted_accounts
+  description: List trusted accounts
+  source_operation: openapi/volt-io-accounts-openapi-original.yaml#list-trusted-accounts
+- name: create_named_account_order
+  description: Create a named account order; requires Idempotency-Key
+  source_operation: openapi/volt-io-accounts-openapi-original.yaml#create-named-account-order
+- name: get_named_account_order_status
+  description: Get the status of a named account order
+  source_operation: openapi/volt-io-accounts-openapi-original.yaml#get-named-account-order-status
+- name: process_incoming_payment
+  description: Sandbox - simulate processing an incoming payment
+  source_operation: openapi/volt-io-accounts-openapi-original.yaml#process-incoming-payment
+- name: reverse_incoming_transaction
+  description: Sandbox - simulate reversing an incoming transaction
+  source_operation: openapi/volt-io-accounts-openapi-original.yaml#reverse-incoming-transaction

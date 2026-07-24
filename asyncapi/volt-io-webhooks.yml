@@ -1,0 +1,46 @@
+generated: '2026-07-24'
+method: searched
+spec_type: Webhooks
+source: https://docs.volt.io/implementation/webhooks
+notes: >-
+  Volt documents a rich webhook (notification) surface but does not publish an
+  AsyncAPI document. This captures the webhook catalog. Notifications are signed
+  with HMAC SHA256 and verified against the shared secret; notification URLs are
+  configured per resource or per channel in Fuzebox.
+signing:
+  scheme: HMAC SHA256
+  docs: https://docs.volt.io/implementation/webhooks/signature-verification
+channels:
+- name: gateway-notifications
+  docs: https://docs.volt.io/implementation/webhooks/gateway-notifications
+  description: Payment notifications for Volt Gateway and Pay by Link (payment status changes).
+- name: account-notifications
+  docs: https://docs.volt.io/implementation/webhooks/accounts
+  description: Real-time webhooks for account, alias, onboarding, and payment events, grouped into configurable channels.
+  subchannels:
+  - onboarding
+  - payments
+  - account-and-alias-ordering
+  - account-and-alias-lifecycle
+- name: mandate-notifications
+  docs: https://docs.volt.io/api-reference/mandates/webhooks/send-mandate-notification
+  description: Sent to the notification URL provided during mandate creation.
+events:
+  mandate:
+  - {type: mandate_requested, description: Mandate has been proposed to the payer}
+  - {type: mandate_authorised, description: Payer authorised the mandate}
+  - {type: mandate_declined, description: Payer declined the mandate}
+  - {type: mandate_authorisation_abandoned, description: Mandate authorisation timed out}
+  - {type: mandate_suspended, description: Mandate was suspended}
+  - {type: mandate_released, description: Suspended mandate released back to ACTIVE}
+  - {type: mandate_cancelled, description: ACTIVE or SUSPENDED mandate was cancelled}
+  - {type: mandate_expired, description: Mandate reached end of validity}
+  - {type: mandate_consumed, description: ONE_OFF mandate was consumed}
+  - {type: mandate_failed, description: Mandate processing failed}
+  mandate_amendment:
+  - {type: mandate_amendment_requested, description: Amendment request submitted to the provider}
+  - {type: mandate_amended, description: Amendment approved and applied}
+  - {type: mandate_amendment_declined, description: Payer declined the amendment}
+  - {type: mandate_amendment_request_abandoned, description: Amendment request timed out}
+  - {type: mandate_amendment_failed, description: Amendment processing failed}
+troubleshooting: https://docs.volt.io/implementation/webhooks/troubleshooting

@@ -1,0 +1,16 @@
+generated: '2026-07-24'
+method: generated
+source: openapi/volt-io-accounts-openapi-original.yaml
+skills:
+- file: volt-io-create-payout.md
+  name: Create a payout from a Volt Account
+  api: openapi/volt-io-accounts-openapi-original.yaml
+  operations: [get-accounts, get-account-details, create-transaction, get-transaction-details]
+- file: volt-io-order-account-aliases.md
+  name: Order and activate Volt Account aliases
+  api: openapi/volt-io-accounts-openapi-original.yaml
+  operations: [order-aliases, get-alias-order-status, get-aliases, get-alias-details, change-alias-state]
+- file: volt-io-verify-beneficiary.md
+  name: Verify a beneficiary account before payout
+  api: openapi/volt-io-accounts-openapi-original.yaml
+  operations: [get-account-holder-verification-details, approve-account-holder-verification, reject-account-holder-verification]

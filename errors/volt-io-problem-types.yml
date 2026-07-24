@@ -1,0 +1,73 @@
+generated: '2026-07-24'
+method: derived
+format: volt-error-response
+source: openapi/volt-io-accounts-openapi-original.yaml
+docs: https://docs.volt.io/implementation/essentials/error-handling
+envelope:
+  media_type: application/json
+  note: >-
+    Errors are returned as Error<status>Response objects (not RFC 9457
+    application/problem+json). 422 Unprocessable responses carry a list of
+    field-level validation constraints typed by ValidationErrorType.
+problems:
+- status: 400
+  title: Bad request
+  description: Request you sent is invalid or malformed; response describes the actual problem.
+  schema: Error400Response
+- status: 401
+  title: Unauthorized
+  description: Credentials invalid or token expired; re-authenticate and retry.
+  schema: Error401Response
+- status: 403
+  title: Access denied
+  description: Credentials correct but access to this section is disabled or limited; subsequent requests will not be processed.
+  schema: Error403Response
+- status: 404
+  title: Not found
+  description: The requested resource cannot be found.
+  schema: Error404Response
+- status: 405
+  title: Method not supported
+  description: HTTP method is not supported for this URL.
+  schema: Error405Response
+- status: 406
+  title: Media-type not acceptable
+  description: API cannot generate a response in the format from the Accept header.
+  schema: Error406Response
+- status: 409
+  title: Conflict
+  description: Resource state does not allow the modification, or the Idempotency-Key was already used.
+  schema: Error409Response
+- status: 415
+  title: Unsupported media-type
+  description: Request contains data in an unsupported content type.
+  schema: Error415Response
+- status: 422
+  title: Unprocessable
+  description: Request payload validation failed; response lists violated field constraints.
+  schema: Error422Response
+- status: 500
+  title: Internal server error
+  description: Server error; message carries a trace ID and timestamp for investigation.
+  schema: Error500Response
+validation_error_types:
+- TOO_FEW
+- TOO_MANY
+- TOO_LOW
+- TOO_HIGH
+- TOO_SHORT
+- TOO_LONG
+- NOT_EQUAL
+- IS_EQUAL
+- INVALID_FORMAT
+- INVALID_DATE
+- INVALID_TIME
+- INVALID_TYPE
+- REGEX_FAILED
+- OUT_OF_RANGE
+- CHECKSUM_FAILED
+- NOT_UNIQUE
+- VALUE_REQUIRED
+- INVALID_VALUE
+- MISSING_FIELD
+- FIELD_NOT_ALLOWED

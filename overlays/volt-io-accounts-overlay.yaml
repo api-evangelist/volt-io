@@ -1,0 +1,22 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for Volt Accounts API
+  version: 1.0.0
+extends: openapi/volt-io-accounts-openapi-original.yaml
+actions:
+- target: $.info
+  update:
+    x-apievangelist-rating: 4
+    x-apievangelist-provider: volt-io
+    x-apievangelist-product: Volt Accounts (virtual IBANs / named accounts / settlement)
+    x-apievangelist-idempotency: Idempotency-Key header on all POST creates; 409 on replay
+    x-apievangelist-pagination: page-based (page, limit, page-count, total-items response headers)
+    x-apievangelist-auth: OAuth2 Bearer JWT (token from gateway.volt.io/oauth)
+- target: $.info
+  update:
+    x-apievangelist-related-surfaces:
+      payments: https://docs.volt.io/api-reference/payments
+      mandates: https://docs.volt.io/api-reference/mandates
+      verify: https://docs.volt.io/api-reference/verify
+      reporter: https://docs.volt.io/api-reference/reporter
+      webhooks: https://docs.volt.io/implementation/webhooks

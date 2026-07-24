@@ -1,0 +1,83 @@
+generated: '2026-07-24'
+method: derived
+source: openapi/volt-io-accounts-openapi-original.yaml
+scope: Volt Accounts API (virtual IBANs / named accounts / settlement)
+entities:
+- name: Account
+  schema: AccountDetails
+  description: A Volt Account (virtual IBAN / named account) that holds a balance and identifiers.
+  key: accountId (uuid)
+- name: Alias
+  schema: AliasDetails
+  description: An additional account identifier issued under a Volt Account for reconciliation.
+  key: aliasId (uuid)
+- name: AliasOrder
+  schema: AliasOrderDetails
+  description: An order to provision one or more aliases; tracked to completion.
+  key: orderId (uuid)
+- name: NamedAccountOrder
+  schema: NamedAccountOrderDetails
+  description: An order to provision a named account; tracked to completion.
+  key: orderId (uuid)
+- name: Transaction
+  schema: TransactionDetails
+  description: Movement of funds (payout, settlement, refund, internal, incoming).
+  key: transactionId (uuid)
+- name: Beneficiary
+  schema: Beneficiary
+  description: A transaction beneficiary linked to an account.
+- name: TrustedAccount
+  schema: TrustedAccountMinimalDetails
+  description: An account trusted for outgoing payments.
+- name: AccountHolderVerification
+  schema: AccountHolderVerificationDetails
+  description: A VoP/CoP verification result for a beneficiary account.
+relationships:
+- from: Alias
+  to: Account
+  type: belongs_to
+  via: accountId
+- from: AliasOrder
+  to: Account
+  type: belongs_to
+  via: accountId
+- from: NamedAccountOrder
+  to: Account
+  type: has_one
+  via: orderId -> account
+- from: Transaction
+  to: Account
+  type: belongs_to
+  via: accountId
+- from: Transaction
+  to: Alias
+  type: belongs_to
+  via: aliasId
+- from: Transaction
+  to: Transaction
+  type: belongs_to
+  via: sourceTransactionId
+  note: refund/reversal links back to its source transaction
+- from: Transaction
+  to: GatewayPayment
+  type: belongs_to
+  via: gatewayPaymentId
+  note: links an account transaction to a Volt Gateway payment
+- from: Account
+  to: Beneficiary
+  type: has_many
+  via: accountId
+- from: Beneficiary
+  to: AccountHolderVerification
+  type: has_one
+  via: account holder verification result
+enums:
+- TransactionStatusEnum
+- TransactionOperationEnum
+- TransactionTypeEnum
+- TransactionSubTypeEnum
+- AliasOrderStatusEnum
+- AccountStatusEnum
+identifier_types:
+- IbanSwiftIdentifier (iban + swiftBic)
+- AccountNumberSortCodeIdentifier (accountNumber + sortCode)

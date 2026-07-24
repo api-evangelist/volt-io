@@ -1,0 +1,137 @@
+generated: '2026-07-24'
+method: derived
+source: mcp/volt-io-mcp.yml + openapi/volt-io-accounts-openapi-original.yaml
+notes: >-
+  Crosswalk binds the DERIVED candidate MCP tools to their backing Volt Accounts
+  API OpenAPI operationIds. Every tool maps 1:1 to a real REST operation, so each
+  tool's real input contract is that operation's parameters + requestBody. There
+  is no published Volt MCP server or GraphQL surface, so mcp_only is empty. Scope
+  is the Accounts API only (the single machine-readable spec Volt publishes, in
+  github.com/volt-io/volt-io-accounts); the Payments, Mandates, Verify and
+  Reporter gateway APIs are documented but ship no fetchable OpenAPI, so they are
+  out of crosswalk scope.
+surfaces:
+  openapi: openapi/volt-io-accounts-openapi-original.yaml
+  graphql: null
+  mcp:
+    url: null
+    status: candidate (derived from OpenAPI; not a published server)
+crosswalk:
+- tool: list_transactions
+  category: transactions
+  rest: [get-transactions]
+  binding: rest
+  confidence: high
+- tool: get_transaction
+  category: transactions
+  rest: [get-transaction-details]
+  binding: rest
+  confidence: high
+- tool: create_transaction
+  category: transactions
+  rest: [create-transaction]
+  binding: rest
+  confidence: high
+  note: requires Idempotency-Key header; 409 on replay
+- tool: get_account_holder_verification
+  category: verification
+  rest: [get-account-holder-verification-details]
+  binding: rest
+  confidence: high
+- tool: approve_account_holder_verification
+  category: verification
+  rest: [approve-account-holder-verification]
+  binding: rest
+  confidence: high
+- tool: reject_account_holder_verification
+  category: verification
+  rest: [reject-account-holder-verification]
+  binding: rest
+  confidence: high
+- tool: list_accounts
+  category: accounts
+  rest: [get-accounts]
+  binding: rest
+  confidence: high
+- tool: get_account
+  category: accounts
+  rest: [get-account-details]
+  binding: rest
+  confidence: high
+- tool: close_account
+  category: accounts
+  rest: [close-account]
+  binding: rest
+  confidence: high
+- tool: list_account_beneficiaries
+  category: accounts
+  rest: [get-account-beneficiaries]
+  binding: rest
+  confidence: high
+- tool: list_aliases
+  category: aliases
+  rest: [get-aliases]
+  binding: rest
+  confidence: high
+- tool: order_aliases
+  category: aliases
+  rest: [order-aliases]
+  binding: rest
+  confidence: high
+  note: requires Idempotency-Key header
+- tool: get_alias_order_status
+  category: aliases
+  rest: [get-alias-order-status]
+  binding: rest
+  confidence: high
+- tool: get_alias
+  category: aliases
+  rest: [get-alias-details]
+  binding: rest
+  confidence: high
+- tool: change_alias_state
+  category: aliases
+  rest: [change-alias-state]
+  binding: rest
+  confidence: high
+- tool: close_alias
+  category: aliases
+  rest: [close-alias]
+  binding: rest
+  confidence: high
+- tool: list_trusted_accounts
+  category: trusted-accounts
+  rest: [list-trusted-accounts]
+  binding: rest
+  confidence: high
+- tool: create_named_account_order
+  category: accounts
+  rest: [create-named-account-order]
+  binding: rest
+  confidence: high
+  note: requires Idempotency-Key header
+- tool: get_named_account_order_status
+  category: accounts
+  rest: [get-named-account-order-status]
+  binding: rest
+  confidence: high
+- tool: process_incoming_payment
+  category: sandbox
+  rest: [process-incoming-payment]
+  binding: rest
+  confidence: high
+  note: sandbox-only simulation endpoint
+- tool: reverse_incoming_transaction
+  category: sandbox
+  rest: [reverse-incoming-transaction]
+  binding: rest
+  confidence: high
+  note: sandbox-only simulation endpoint
+mcp_only: []
+rest_only: []
+coverage:
+  tools_named: 21
+  tools_bound: 21
+  mcp_only: 0
+  rest_ops_total: 21
+  rest_ops_with_tool: 21

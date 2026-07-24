@@ -1,0 +1,31 @@
+generated: '2026-07-24'
+method: searched
+source: openapi/volt-io-accounts-openapi-original.yaml + docs.volt.io
+notes: >-
+  Volt provides a full sandbox environment separated from production by host.
+  Credentials (Client ID/Secret + API username/password) are self-issued in
+  Fuzebox. No fixed magic test card/IBAN numbers are published verbatim in the
+  fetchable spec; the Accounts sandbox instead exposes explicit simulation
+  endpoints to drive incoming-payment events. Never invent test values.
+environments:
+- name: sandbox
+  accounts_host: https://accounts.sandbox.volt.io
+  gateway: sandbox gateway per Fuzebox environment
+  fuzebox: https://fuzebox.volt.io/
+- name: production
+  accounts_host: https://accounts.volt.io
+  gateway_host: https://gateway.volt.io
+credential_source:
+  console: Fuzebox
+  docs: https://docs.volt.io/implementation/fuzebox/application-registration
+  items: [Client ID, Client Secret, API username, API password]
+simulation_endpoints:
+- operationId: process-incoming-payment
+  path: /payin (process)
+  purpose: Simulate processing an incoming payment into a Volt Account (sandbox only)
+- operationId: reverse-incoming-transaction
+  path: /payin (reverse)
+  purpose: Simulate reversing an incoming transaction (sandbox only)
+mobile_sdk_sandbox:
+  ios: https://docs.volt.io/implementation/mobile-sdk/ios/production
+  note: VoltCheckout iOS/Android SDKs run in sandbox mode before switching to production

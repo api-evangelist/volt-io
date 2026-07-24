@@ -1,0 +1,478 @@
+# Docs
+
+- Volt Docs: Volt is a global open banking payments network. This documentation covers integration guides, API references, and implementation details for Volt's payment products.
+  - [Support](/support)
+  - [Cookie Policy](/cookie-policy): Information about how docs.volt.io uses cookies and similar technologies.
+- Onboarding
+  - [Onboarding](/onboarding): Before you can start accepting payments through your Volt-powered checkout, you’ll need to fill out a Merchant Application Form. We’ll then perform some standard KYC and AML checks and get back to you if we need any further information.
+- API Reference: Volt's APIs Reference Documentation
+  - [API Reference](/api-reference): View the Volt API OpenAPI schemas.
+
+  - **Global API**
+  - [API Idempotency](/api-reference/api-idempotency)
+  - [Authentication](/api-reference/authentication/post-oauth): We use the industry-standard oAuth2 authentication to secure our API.
+
+### Information you'll need
+- Your **Client ID** and **Client Secret** (from the application you created in Fuzebox).
+- Your **API username** and **password** (from the API credentials section in Fuzebox).
+
+Step-by-step instructions on how to authenticate are available in our [implementation guides](https://docs.volt.io/implementation/essentials/authentication) area.
+  - Payments API: Volt Payments API
+    - [Global Payments API](/api-reference/payments): View OpenAPI schemas.
+    - Payments: Payments endpoints
+      - [Create payment](/api-reference/payments/payments/post-payments): Create new payment request.
+      - [Cancel payment](/api-reference/payments/payments/cancel-payment): Cancel payment request.
+      - [Get payment's name match score](/api-reference/payments/payments/get-name-match-score): Return name match score for given payment.
+      - [Get payment details](/api-reference/payments/payments/get-payment): Fetch particular payment details.
+      - [Update payment](/api-reference/payments/payments/patch-payment): Update payment request.
+    - Institutions: Institutions endpoints
+      - [Get institution details](/api-reference/payments/institutions/get-institution-id): Fetch particular institution details.
+      - [Get institutions' countries](/api-reference/payments/institutions/get-institutions-countries): Get list of countries in which institutions operate. This information is useful for generating a bank's country switcher.
+      - [Get list of institutions](/api-reference/payments/institutions/get-institutions): Get list of institutions. All the details can be used for creating a institution selection UI, along with required account identifiers inputs.
+  - Mandates API: Recurring payments via mandates
+    - [Recurring Payments — Mandates API](/api-reference/mandates): OpenAPI schemas for the Mandates API, used to power recurring payments.
+    - Mandate management: Create, retrieve, and manage mandates.
+      - [Create mandate](/api-reference/mandates/mandate-management/create-mandate)
+      - [Get mandate details](/api-reference/mandates/mandate-management/get-mandate-details)
+      - [Update mandate request](/api-reference/mandates/mandate-management/update-mandate-request)
+      - [Recall mandate](/api-reference/mandates/mandate-management/recall-mandate): Recall a mandate that has not yet been authorised.
+      - [Cancel mandate](/api-reference/mandates/mandate-management/cancel-mandate): Cancel 
+* an `ACTIVE` or `SUSPENDED` mandate (customer), or 
+* `NEW` mandate (payer).
+      - [Suspend mandate](/api-reference/mandates/mandate-management/suspend-mandate): Suspend an `ACTIVE` mandate.
+      - [Release (unsuspend) mandate](/api-reference/mandates/mandate-management/release-mandate): Release a `SUSPENDED` mandate back to `ACTIVE` state.
+
+Only mandate suspended by the same party can be released.
+      - [Create amendment request](/api-reference/mandates/mandate-management/create-amendment-request): Create amendment request while mandate is `ACTIVE` or `SUSPENDED`.
+
+At least one of `validity` or `payTo` must be provided. The `payTo` field is only allowed for PayTo mandates.
+
+If the mandate has already been used for payments, the `validity.from` (start date) cannot be amended.
+      - [Get amendment details](/api-reference/mandates/mandate-management/get-amendment): Retrieve amendment details. Recalled amendments return `404 Not Found`.
+      - [Recall amendment request](/api-reference/mandates/mandate-management/recall-amendment-request): Recall pending (`NEW` or `AWAITING_APPROVAL`) amendment.
+    - Recurring payments: Create payments against an existing mandate.
+      - [Create recurring payment](/api-reference/mandates/recurring-payments/create-recurring-payment): Initiate payment based on an existing `ACTIVE` mandate.
+    - Webhooks: Notifications sent to your endpoint when mandate or amendment status changes.
+      - [Mandate status change notification](/api-reference/mandates/webhooks/send-mandate-notification): Sent to the notification URL provided during mandate creation.
+
+| Type | Description |
+|-------|-------------|
+| `mandate_requested` | Mandate has been proposed to the payer |
+| `mandate_authorised` | Payer authorised the mandate |
+| `mandate_declined` | Payer declined the mandate |
+| `mandate_authorisation_abandoned` | Mandate authorisation timed out |
+| `mandate_suspended` | Mandate was suspended |
+| `mandate_released` | Suspended mandate released back to `ACTIVE` |
+| `mandate_cancelled` | `ACTIVE` or `SUSPENDED` mandate was cancelled |
+| `mandate_expired` | Mandate reached end of validity |
+| `mandate_consumed` | `ONE_OFF` mandate was consumed |
+| `mandate_failed` | Mandate processing failed  |
+      - [Amendment status change notification](/api-reference/mandates/webhooks/send-amendment-notification): Sent to the notification URL provided during mandate creation.
+
+| Type | Description |
+|-------|-------------|
+| `mandate_amendment_requested` | Amendment request submitted to the provider |
+| `mandate_amended` | Amendment approved and applied. `BILATERAL`: payer approved. `UNILATERAL`: auto-approved |
+| `mandate_amendment_declined` | Payer declined the amendment |
+| `mandate_amendment_request_abandoned` | Amendment request timed out |
+| `mandate_amendment_failed` | Amendment processing failed |
+  - Accounts API: Volt Accounts API
+    - [Accounts API](/api-reference/accounts): View OpenAPI schemas.
+    - Accounts
+      - [Close account](/api-reference/accounts/accounts/close-account): Immediately closes the specified account. A closed account cannot be reopened or used for further transactions. Only Named Accounts can be closed.
+      - [List of transaction beneficiaries](/api-reference/accounts/accounts/get-account-beneficiaries)
+      - [Get account details](/api-reference/accounts/accounts/get-account-details)
+      - [List of accounts](/api-reference/accounts/accounts/get-accounts)
+    - Named accounts
+      - [Create named account order](/api-reference/accounts/named-accounts/create-named-account-order)
+      - [Get named account order status](/api-reference/accounts/named-accounts/get-named-account-order-status)
+    - Trusted accounts
+      - [List of trusted accounts](/api-reference/accounts/trusted-accounts/list-trusted-accounts)
+    - Transactions
+      - [Create a transaction](/api-reference/accounts/transactions/create-transaction)
+      - [Get transaction details](/api-reference/accounts/transactions/get-transaction-details)
+      - [List of transactions](/api-reference/accounts/transactions/get-transactions)
+    - Account holder verification
+      - [Approve account holder verification](/api-reference/accounts/account-holder-verification/approve-account-holder-verification)
+      - [Get account holder verification details](/api-reference/accounts/account-holder-verification/get-account-holder-verification-details)
+      - [Reject account holder verification](/api-reference/accounts/account-holder-verification/reject-account-holder-verification)
+    - Sandbox
+      - [Process an simulated incoming transaction](/api-reference/accounts/sandbox/process-incoming-payment): This endpoint receives and processes a simulated incoming transaction.
+      - [Trigger a reversal for an incoming transaction](/api-reference/accounts/sandbox/reverse-incoming-transaction): Simulates a banking provider reversal notification for the specified incoming transaction. Only available in the sandbox environment.
+    - Aliases
+      - [Change state of alias](/api-reference/accounts/aliases/change-alias-state): Marks the specified alias as active or inactive.
+      - [Close alias](/api-reference/accounts/aliases/close-alias): Permanently closes the specified alias. A closed alias cannot be reopened or used for further transactions.
+      - [Get alias details](/api-reference/accounts/aliases/get-alias-details)
+      - [Get alias order status](/api-reference/accounts/aliases/get-alias-order-status)
+      - [List of aliases for an account](/api-reference/accounts/aliases/get-aliases)
+      - [Order aliases](/api-reference/accounts/aliases/order-aliases)
+  - Verify API: Volt Verify API
+    - [Account Identification API Reference](/api-reference/verify): View OpenAPI schemas.
+    - Account access
+      - [Get account access details](/api-reference/verify/account-access/get-account-access-id)
+      - [Create account access request](/api-reference/verify/account-access/post-account-access)
+  - Reporting API: Volt Reporting API
+    - [Reporting API Reference](/api-reference/reporter): View OpenAPI schemas.
+    - [Download a report](/api-reference/reporter/get-reports-id-download): This endpoint allows downloading a previously generated report in CSV format.  
+
+Use the `id` returned when you requested the report.
+    - [Get report by ID](/api-reference/reporter/get-reports-id): This endpoint allows fetching the details of a specific report.  
+
+Note that this will return the details of the report only.  To download the report as a CSV file, use the `/reports/{id}/download` endpoint.
+
+Provide the `id` returned when you requested the report.
+    - [Get available reports](/api-reference/reporter/get-reports): This endpoint will allow you to fetch a list containing all the reports you've generated.  Use the `id` of the report to download it using the `/reports/{id}/download` endpoint.
+
+By default, it will return a complete list of reports for your entire customer hierarchy. 
+
+Providing a `customerId` in the query will allow you to limit the list to reports available for one particular merchant.
+    - [Create Audit Log report](/api-reference/reporter/post-reports-audit-log): This endpoint initiates the generation of an audit log report for a specified time frame. Reports are generated asynchronously and, once ready, can be downloaded as CSV files from `/reports/{id}/download`. Use `/reports/{id}` to monitor the report's status.
+
+The period between `startDate` and `endDate` must not exceed 92 days, allowing for quarterly reports. Specifying a `customerId` filters the report to include data exclusively for that merchant. Without a `customerId`, the report covers all merchants in your customer hierarchy.
+
+If a `allowEmpty` is **not** provided or is set to `false` the report is **not** generated when there is no available entries and an error is returned.
+    - [Create Connect report](/api-reference/reporter/post-reports-connect): This endpoint allows you to request a Connect report for a selected `bankAccountId` and specific period. Once requested, your report will be generated asynchronously and available at the `/reports/id/download` endpoint as a CSV file once it's been generated. Check on the availability status of your report using the `/reports/{id}` endpoint.
+
+The `startDate` and `endDate` may be a maximum of **92 days** apart, allowing you to generate reports covering up to 3 months of data.
+
+If `allowEmpty` is **not** provided or is set to `false`, the report is **not** generated when there are no available entries, and an error is returned.
+
+The optional `dateFilterType` parameter allows you to specify whether the report should filter by `createdAt` (default) or `updatedAt`. When not provided, `dateFilterType` defaults to `createdAt`.
+    - [Create Payment report](/api-reference/reporter/post-reports-payment): This endpoint allows you to request a payment report for a specific period.  Once requested, your report will be generated asynchronously and available at the `/reports/id/download` endpoint as a CSV file once it's been generated.  Check on the availability status of your report using the `/reports/{id}` endpoint.
+
+The `startDate` and `endDate` may be a maximum of **92 days** apart, so you can generate reports containing 3 months data.
+
+If you supply a `customerId` for any merchant within your customer hierarchy, only that merchant's data will be returned.  
+
+If a `customer ID` is **not** provided, the report will contain data for all merchants within your customer hierarchy.
+
+If a `allowEmpty` is **not** provided or is set to `false` the report is **not** generated when there is no available entries and an error is returned.
+    - [Create Payouts report](/api-reference/reporter/post-reports-payouts): This endpoint allows you to request a payouts report for a specific period. Once requested, your report will be generated asynchronously and available at the `/reports/id/download` endpoint as a CSV file once it's been generated. Check on the availability status of your report using the `/reports/{id}` endpoint.
+
+The `startDate` and `endDate` may be a maximum of **92 days** apart, so you can generate reports containing 3 months data.
+
+If you supply a `customerId` for any merchant within your customer hierarchy, only that merchant's data will be returned.
+
+If a `customer ID` is **not** provided, the report will contain data for all merchants within your customer hierarchy.
+
+If you supply an `accountId` for Connect account, only data related to this account will be returned.
+
+If an `account ID` is **not** provided, the report will contain data related to all Connect accounts.
+    - [Create Refund report](/api-reference/reporter/post-reports-refund): This endpoint allows you to request a refund report for a specific period. Once requested, your report will be generated asynchronously and available at the `/reports/id/download endpoint` as a CSV file once it's been generated. Check on the availability status of your report using the `/reports/{id}` endpoint.
+
+The `startDate` and `endDate` may be a maximum of **92 days** apart, so you can generate reports containing 3 months data.
+
+If you supply a `customerId` for any merchant within your customer hierarchy, only that merchant's data will be returned.
+
+If a `customer ID` is **not** provided, the report will contain data for all merchants within your customer hierarchy.
+
+If you supply an `accountId` for Connect account, only data related to this account will be returned.
+
+If an `account ID` is **not** provided, the report will contain data related to all Connect accounts.
+
+  - **Legacy APIs**
+  - Volt Gateway API (legacy): Volt Gateway API (legacy)
+    - [Volt Gateway API (legacy)](/api-reference/gateway-legacy): View OpenAPI Schemas.
+    - Authenticating with the api
+      - [oAuth2 password authentication](/api-reference/gateway-legacy/authenticating-with-the-api/post-authentication): We use the industry-standard oAuth2 authentication to secure our API.   
+
+### Information you'll need
+- Your **Client ID** and **Client Secret** (from the application you created in Fuzebox)
+- Your **API username** and **password** (from the merchant credentials section in Fuzebox)
+
+Step-by-step instructions on how to authenticate are available in our [integration guides](https://docs.volt.io/gateway/authentication/) area.
+    - Payments
+      - [Payment details](/api-reference/gateway-legacy/payments/get-payment-details-by-id): Returns the full details of an existing payment that you've created througn the POST /payments endpoint.  Simply supply the ```id``` of the payment we returned when the payment was created.
+
+You can retrieve a filterable list of payments through the ```GET /payments``` endpoint.
+      - [List payments](/api-reference/gateway-legacy/payments/get-payment-list): Reporting API available to fetch list of payments based on specific selection criteria
+      - [Payment Match Score](/api-reference/gateway-legacy/payments/get-payments-paymentId-name-match-score): This endpoint will allow accurately matches naming nuances between merchant inputs and end-user bank records
+      - [New embedded checkout request](/api-reference/gateway-legacy/payments/post-dropin-payment): The first step is to submit the details of the payment you'd like to initiate. We'll validate that all the required data is supplied and that it's a payment that Volt can support.
+
+Step-by-step instructions for creating an embedded checkout are available in our [integration guides](https://docs.volt.io/gateway/integration-embedded-v2/) area.
+      - [New payment request](/api-reference/gateway-legacy/payments/post-payment-eubr): The first step is to submit the details of the payment you'd like to initiate.  We'll validate that all the required data is supplied and that it's a payment that Volt can support.
+
+Step-by-step instructions for payment initiation are available in our [integration guides](https://docs.volt.io/gateway/hosted/) area.
+    - Reporting
+      - [Download a report](/api-reference/gateway-legacy/reporting/get-reports-id-download): This endpoint allows downloading a previously generated report in CSV format.  
+
+Use the ```id``` returned when you requested the report.
+      - [Get report by ID](/api-reference/gateway-legacy/reporting/get-reports-id): This endpoint allows fetching the details of a specific report.  
+
+Note that this will return the details of the report only.  To download the report as a CSV file, use the ```/reports/{id}/download``` endpoint.
+
+Provide the ```id``` returned when you requested the report.
+      - [Get available reports](/api-reference/gateway-legacy/reporting/get-reports): This endpoint will allow you to fetch a list containing all the reports you've generated.  Use the ```id``` of the report to download it using the ```/reports/{id}/download``` endpoint.
+
+By default, it will return a complete list of reports for your entire customer hierarchy. 
+
+Providing a ```customerId``` in the query will allow you to limit the list to reports available for one particular merchant.
+      - [Create Audit Log report](/api-reference/gateway-legacy/reporting/post-reports-audit-log): This endpoint initiates the generation of an audit log report for a specified time frame. Reports are generated asynchronously and, once ready, can be downloaded as CSV files from `/reports/{id}/download`. Use `/reports/{id}` to monitor the report's status.
+
+The period between `startDate` and `endDate` must not exceed 92 days, allowing for quarterly reports. Specifying a `customerId` filters the report to include data exclusively for that merchant. Without a `customerId`, the report covers all merchants in your customer hierarchy.
+
+If a ```allowEmpty``` is **not** provided or is set to ```false``` the report is **not** generated when there is no available entries and an error is returned.
+      - [Create Connect report](/api-reference/gateway-legacy/reporting/post-reports-connect): This endpoint allows you to request a Connect report for a selected ```bankAccountId``` and specific period. Once requested, your report will be generated asynchronously and available at the ```/reports/id/download``` endpoint as a CSV file once it's been generated. Check on the availability status of your report using the ```/reports/{id}``` endpoint.
+
+The ```startDate``` and ```endDate``` may be a maximum of **92 days** apart, allowing you to generate reports covering up to 3 months of data.
+
+If ```allowEmpty``` is **not** provided or is set to ```false```, the report is **not** generated when there are no available entries, and an error is returned.
+
+The optional ```dateFilterType``` parameter allows you to specify whether the report should filter by ```createdAt``` (default) or ```updatedAt```. When not provided, ```dateFilterType``` defaults to ```createdAt```.
+      - [Create Payment report](/api-reference/gateway-legacy/reporting/post-reports-payment): This endpoint allows you to request a payment report for a specific period.  Once requested, your report will be generated asynchronously and available at the ```/reports/id/download endpoint``` as a CSV file once it's been generated.  Check on the availability status of your report using the ```/reports/{id}``` endpoint.
+
+The ```startDate``` and ```endDate``` may be a maximum of **92 days** apart, so you can generate reports containing 3 months data.
+
+If you supply a ```customerId``` for any merchant within your customer hierarchy, only that merchant's data will be returned.  
+
+If a ```customer ID``` is **not** provided, the report will contain data for all merchants within your customer hierarchy.
+
+If a ```allowEmpty``` is **not** provided or is set to ```false``` the report is **not** generated when there is no available entries and an error is returned.
+      - [Create Payouts report](/api-reference/gateway-legacy/reporting/post-reports-payouts): This endpoint allows you to request a payouts report for a specific period. Once requested, your report will be generated asynchronously and available at the ```/reports/id/download``` endpoint as a CSV file once it's been generated. Check on the availability status of your report using the ```/reports/{id}``` endpoint.
+
+The ```startDate``` and ```endDate``` may be a maximum of **92 days** apart, so you can generate reports containing 3 months data.
+
+If you supply a ```customerId``` for any merchant within your customer hierarchy, only that merchant's data will be returned.
+
+If a ```customer ID``` is **not** provided, the report will contain data for all merchants within your customer hierarchy.
+
+If you supply an ```accountId``` for Connect account, only data related to this account will be returned.
+
+If an ```account ID``` is **not** provided, the report will contain data related to all Connect accounts.
+      - [Create Refund report](/api-reference/gateway-legacy/reporting/post-reports-refund): This endpoint allows you to request a refund report for a specific period. Once requested, your report will be generated asynchronously and available at the ```/reports/id/download endpoint``` as a CSV file once it's been generated. Check on the availability status of your report using the ```/reports/{id}``` endpoint.
+
+The ```startDate``` and ```endDate``` may be a maximum of **92 days** apart, so you can generate reports containing 3 months data.
+
+If you supply a ```customerId``` for any merchant within your customer hierarchy, only that merchant's data will be returned.
+
+If a ```customer ID``` is **not** provided, the report will contain data for all merchants within your customer hierarchy.
+
+If you supply an ```accountId``` for Connect account, only data related to this account will be returned.
+
+If an ```account ID``` is **not** provided, the report will contain data related to all Connect accounts.
+  - Volt Accounts API (legacy): Volt Accounts API (legacy)
+    - [Global Accounts API](/api-reference/accounts-legacy): View OpenAPI schemas.
+    - Payouts
+      - [Eligible beneficiaries list](/api-reference/accounts-legacy/payouts/get-payout-beneficiaries): **Payouts are only available when using Volt Connect**
+
+For regulatory purposes, it's a closed-loop payout system, meaning you may only payout funds to a person or organisation you've previously received money from using Volt Connect.
+
+This endpoint will return a list of beneficiaries you are allowed send payouts to.  
+
+### Usage
+The list is paginated by default.
+
+### More information
+Full details on payouts can be found in our comprehensive integration guides.
+      - [Payout details](/api-reference/accounts-legacy/payouts/get-payout-by-id): **Payouts are only available when using Volt Connect**
+
+This will return details of the selected payout, with approval update history.
+
+### Usage
+Pass the **id** of the payout as part of the URL. 
+
+### More information
+Full details on payouts can be found in our comprehensive integration guides.
+      - [Payout list](/api-reference/accounts-legacy/payouts/get-payout-list): **Payouts are only available when using Volt Connect**
+
+This will return a list of all existing payouts.  
+
+### Usage
+The list is paginated by default and can be filtered using the parameters shown in the request section below.
+
+### More information
+Full details on payouts can be found in our comprehensive integration guides.
+      - [New payout request](/api-reference/accounts-legacy/payouts/post-create-payout): **Payouts are only available when using Volt Connect**
+
+This will create a payout request to send funds from your Connect account to a beneficiary.  For regulatory purposes, it's a closed-loop payout system, meaning you may only payout funds to a person or organisation you've previously received money from using Volt Connect.
+
+### Usage
+Pass the details of the payout you'd like to make in the body of the request.
+
+### Approval
+Payouts don't require approval if you create them using the API.  If you need to review payouts before sending, this workflow should take place on your own system before you call this endpoint. 
+
+### More information
+Full details on payouts can be found in our comprehensive integration guides.
+    - Refunds
+      - [Check refund eligibility](/api-reference/accounts-legacy/refunds/get-refund-details): **Refunds are only available when using Volt Connect**  
+
+### Usage
+Pass the **id** of the existing payment in the URL to check whether this payment is eligible for a refund.
+
+### More information
+Full details on how to request refunds, with full details of notifications you can expect, can be found in our comprehensive integration guides.
+      - [New refund request](/api-reference/accounts-legacy/refunds/post-refund-request): **Refunds are only available when using Volt Connect**  
+
+### Usage
+Pass the **id** of the existing payment in the URL and the amount and reference for the refund in the body of the request.
+
+### Checking eligibility before requesting a refund
+You can get the eligibility for a refund using GET /payments/{id}/refund-details
+
+### More information
+Full details on how to use refunds, with details of notifications you can expect, can be found in our comprehensive integration guides.
+    - Verification of payee
+      - [Accepting or declining Verification of Payee result for transaction](/api-reference/accounts-legacy/verification-of-payee/patch-accept-decline-vop-result)
+    - Volt accounts
+      - [Check account balance](/api-reference/accounts-legacy/volt-accounts/get-account-balance)
+      - [Get list of transactions](/api-reference/accounts-legacy/volt-accounts/get-account-transactions)
+      - [Virtual accounts list](/api-reference/accounts-legacy/volt-accounts/get-virtual-accounts-list)
+      - [Virtual IBANs list](/api-reference/accounts-legacy/volt-accounts/get-virtual-iban-list)
+      - [Activate virtual IBAN](/api-reference/accounts-legacy/volt-accounts/patch-activate-virtual-iban): Activates and returns required amount of virtual IBANs
+      - [Deactivate an active Virtual IBAN](/api-reference/accounts-legacy/volt-accounts/patch-deactivate-virtual-iban)
+      - [Create VIBAN for Account](/api-reference/accounts-legacy/volt-accounts/post-create-account-viban)
+- Branding: Volt brand assets, logo variations, and brand guidelines
+  - [Volt Boilerplate](/branding): Introduction to Volt's brand guidelines
+  - [Volt FAQs](/branding/volt-faqs): Frequently asked questions about Volt
+
+  - **Volt Branding**
+  - [Logo](/branding/logo): Volt logo usage guidelines
+  - [Colors](/branding/colors): Volt brand color palette and usage guidelines
+  - [Photos](/branding/photos): Guidelines for using Volt brand photography
+  - [Visuals](/branding/visuals): Visual elements and design metaphors for Volt brand
+  - [Typography](/branding/typography): Volt brand typography specifications
+
+  - **Checkout Branding**
+  - [Volt Bank Icon](/branding/volt-bank-icon): Guidelines for using the Volt bank icon in checkout
+  - [Bank Logos Icon](/branding/bank-logos-icon): Guidelines for using bank logos in checkout
+
+  - **Downloads**
+  - [Volt Branding Downloads](/branding/volt-branding-downloads): Download Volt brand assets and guidelines
+  - [Checkout Branding Downloads](/branding/checkout-branding-downloads): Download checkout branding assets
+- Get started: Get started with Volt's real-time account-to-account payment solutions
+  - [Welcome to Volt](/get-started): Get started with Volt's real-time account-to-account payment solutions
+
+  - **Integration Options**
+  - [Direct Integration with Volt](/get-started/quick-integration-guide): Get started with Volt Payment Gateway in 3 simple steps
+  - [Via Technical Service Providers](/get-started/tsp-integration): Integrate Volt through your Technical Service Provider (TSP)
+  - [Via Payment Service Providers](/get-started/psp-integration): Integrate Volt through your Payment Service Provider (PSP)
+  - [Use E-commerce Plugins](/get-started/e-commerce-plugins): Integrate Volt using e-commerce platform plugins
+- Implementation: Technical documentation for Volt APIs and integrations
+  - [Implementation](/implementation): Everything you need to integrate Volt into your application. Choose your integration method and follow our comprehensive guides to get started.
+  - Essentials
+    - [Authentication](/implementation/essentials/authentication): How to authenticate with all Volt APIs
+    - [Environments](/implementation/essentials/environments): Sandbox and Production environments
+    - [Error handling](/implementation/essentials/error-handling): Understanding error responses and troubleshooting in the Volt Global API
+    - [Maintenance and changes](/implementation/essentials/maintenance-and-changes): Understanding API changes and versioning policy
+
+  - **Gateway**
+  - [Global payments API overview](/implementation/payments): The cornerstone of Volt's infrastructure for payment processing
+  - Integration overview
+    - [Hosted checkout](/implementation/payments/integration-overview/hosted-checkout): Integrate using Volt's hosted payment page
+    - [API-only (build your own UI)](/implementation/payments/integration-overview/api-only): Build your own custom payment interface using Volt's APIs
+    - [Mobile SDK](/implementation/payments/integration-overview/mobile-sdk): Integrate Volt's native components into your mobile app
+  - Integration guides
+    - [Overview](/implementation/payments/integration-guides/overview): Step-by-step guides for integrating Volt Global API
+    - [Hosted checkout](/implementation/payments/integration-guides/hosted-checkout-guide): Integrate using Volt's hosted payment page
+    - [API-only](/implementation/payments/integration-guides/api-only-guide): Build your own user interface for the payment experience
+    - [Mobile SDK](/implementation/payments/integration-guides/mobile-sdk-guide): Integrate Volt's payment capabilities into your mobile applications
+    - [Verified payments](/implementation/payments/integration-guides/verified-payment-guide): Add account-ownership verification and an approval gate to an Open Banking payment
+  - Integration details
+    - [Payment initiation flows](/implementation/payments/integration-details/payment-initiation-flows): Understanding payment initiation flows and authorization methods
+    - [Institutions' list](/implementation/payments/integration-details/institutions-list): How to retrieve the list of supported financial institutions
+    - [Requesting payment](/implementation/payments/integration-details/requesting-payment): How to create payment requests using the Unified Global Payments API
+    - [Payment status flow](/implementation/payments/integration-details/payment-status-flow): Understanding payment statuses and their flow in the Volt Global API
+    - [Mobile redirects (app-to-app)](/implementation/payments/integration-details/mobile-redirects-app-to-app)
+  - [Migration guide](/implementation/payments/migration-guide): Guide for migrating from Payments API (legacy) to Global Unified Payments API
+
+  - **Recurring Payments**
+  - [Overview](/implementation/mandates/overview): Recurring payments with standing authorisation via Volt's Mandate Management API
+  - [Integration guide](/implementation/mandates): Set up mandates, initiate recurring payments, and manage the mandate lifecycle
+  - [Mandate Amendments](/implementation/mandates/amendments): Change mandate details and limits on an active or suspended PayTo mandate
+
+  - **Accounts**
+  - [Overview](/implementation/accounts)
+  - Named Accounts
+    - [Onboarding (KYC)](/implementation/accounts/named-accounts/onboarding)
+    - [Requesting a Named Account](/implementation/accounts/named-accounts/requesting-an-account)
+    - [Account lifecycle](/implementation/accounts/named-accounts/account-lifecycle)
+  - Aliases
+    - [Introduction](/implementation/accounts/aliases/introduction): Use account aliases to issue additional account identifiers under a Volt Account for automatic reconciliation.
+    - [Ordering aliases](/implementation/accounts/aliases/ordering): Order new aliases for a Volt Account, track the order, and fetch the resulting aliases.
+    - [Managing aliases](/implementation/accounts/aliases/managing): Activate, deactivate, and close aliases, and receive lifecycle notifications.
+  - [Balances](/implementation/accounts/balances)
+  - [Reconciliation](/implementation/accounts/reconciliation)
+  - [Incoming payments](/implementation/accounts/incoming-payments)
+  - Outgoing payments
+    - [Payment types](/implementation/accounts/outgoing-payments/payment-types)
+    - [Payment statuses](/implementation/accounts/outgoing-payments/payment-statuses)
+    - [Account holder verification (VoP/CoP)](/implementation/accounts/outgoing-payments/account-holder-verification)
+    - [Settlement scheduler](/implementation/accounts/outgoing-payments/settlement-scheduler): Automate recurring payments of funds from your Volt account to a trusted account
+    - [Initiate the payment via API](/implementation/accounts/outgoing-payments/initiate-via-api)
+    - [Signing the request](/implementation/accounts/outgoing-payments/signing-request): Authenticate your API requests using JWS (JSON Web Signature) for enhanced security.
+  - [Internal transfers](/implementation/accounts/internal-transfers)
+  - Integration guides
+    - [Onboarding](/implementation/accounts/integration-guides/onboarding)
+    - [Payments](/implementation/accounts/integration-guides/payments)
+    - [Aliases](/implementation/accounts/integration-guides/aliases)
+  - [Linking mechanism](/implementation/accounts/linking)
+
+  - **Stablecoins**
+  - [Overview](/implementation/stablecoins/overview): Use Volt to accept stablecoins, issue refunds, convert to and settle in fiat to your bank account
+  - [Onboarding](/implementation/stablecoins/onboarding): Enable the Stablecoin product and complete partner onboarding before you go live
+  - [Payments](/implementation/stablecoins/payments): Accept stablecoin payments through the hosted Volt Checkout
+  - [Settlements](/implementation/stablecoins/settlements): Move collected stablecoin balances to your own bank or crypto wallet, automatically
+  - [Refunds](/implementation/stablecoins/refunds): Return funds from a completed stablecoin payment back to your customer
+  - [Statuses](/implementation/stablecoins/statuses): Status codes for stablecoin payments, settlements and refunds
+
+  - **Webhooks**
+  - [Overview](/implementation/webhooks): Setting up and handling Volt payment notifications via webhooks
+  - [Signature verification](/implementation/webhooks/signature-verification): How to verify Volt notification signatures using HMAC SHA256 and test your implementation
+  - [Troubleshooting](/implementation/webhooks/troubleshooting): Troubleshooting guide for notification delivery issues
+  - [Gateway notifications](/implementation/webhooks/gateway-notifications): Payment notifications for Volt Gateway and Pay by Link
+  - Account Notifications
+    - [Account Notifications](/implementation/webhooks/accounts): Real-time webhooks for account, alias, onboarding, and payment events, grouped into channels you configure in Fuzebox.
+    - [Onboarding](/implementation/webhooks/accounts/onboarding)
+    - [Payments](/implementation/webhooks/accounts/payments)
+    - [Account & Alias ordering](/implementation/webhooks/accounts/account-ordering): Receive real-time webhooks tracking named account ordering and alias creation progress.
+    - [Account & Alias lifecycle](/implementation/webhooks/accounts/account-lifecycle): Receive real-time webhooks when accounts and aliases change state — suspension, reactivation, and closure.
+
+  - **Integrations**
+  - E-commerce plugins
+    - [E-commerce plugins](/implementation/plugins): Integrate Volt using e-commerce platform plugins
+    - [Shopify](/implementation/plugins/shopify): Install and configure the Volt Shopify plugin (Instant Bank Transfer).
+    - [Shopware](/implementation/plugins/shopware): Install and configure the Volt Shopware plugin (Pay by Bank).
+    - [Optty](/implementation/plugins/optty): Enable Volt Hosted Checkout via Optty on BigCommerce, Salesforce Commerce Cloud, WooCommerce and Magento.
+  - Mobile SDK
+    - Android
+      - [Integration](/implementation/mobile-sdk/android/installation): Follow the instructions below to integrate the Volt Mobile SDK for Android in your project.
+      - [Payment](/implementation/mobile-sdk/android/payment): Make payment using Android Mobile SDK
+    - iOS
+      - [Overview](/implementation/mobile-sdk/ios): VoltCheckout handles the entire open banking payment flow inside your iOS app. Give it a payment intent, let the user pick their bank and authorise the payment, and get back a result with the payment ID and status.
+      - [Installation](/implementation/mobile-sdk/ios/installation): Add VoltCheckout to your iOS project using Swift Package Manager.
+      - [Quick start](/implementation/mobile-sdk/ios/quick-start): A complete working checkout screen that collects a payment and prints the result.
+      - [Integration guide](/implementation/mobile-sdk/ios/integration): Step-by-step guide to integrating VoltCheckout into your iOS app.
+      - [Alternate flows](/implementation/mobile-sdk/ios/alternate-flows): Skip steps in the checkout flow using hints, save a bank selection for returning users, and implement a two-step picker-then-payment flow.
+      - [Going to production](/implementation/mobile-sdk/ios/production): Switch VoltCheckout from sandbox to production and avoid the most common integration mistakes.
+
+  - **Tools**
+  - Fuzebox
+    - [Fuzebox](/implementation/fuzebox)
+    - [Customer credentials](/implementation/fuzebox/customer-credentials): Generate and manage customer credentials for API access
+    - [Application registration and credentials](/implementation/fuzebox/application-registration): Register an application and generate Client ID and Client Secret for API access
+  - Verify (AIS)
+    - [About Verify](/implementation/power-tools/verify): Lightning-fast proof of account ownership
+    - [Authorisation flows](/implementation/power-tools/verify/authorisation-flows): Understanding the different authorisation flows for account access
+    - [Integration guide](/implementation/power-tools/verify/integration-guide): Step-by-step guide to integrating Volt Verify
+    - [Use cases](/implementation/power-tools/verify/use-cases): Common scenarios for using Volt Verify
+  - Reporter
+    - [Volt reports](/implementation/power-tools/reporter): Generate and download payment, connect, settlement, and audit log reports
+
+    - **How to use**
+    - [Request a report](/implementation/power-tools/reporter/request-report): How to request reports via the Volt Report API
+    - [Fetch & download reports](/implementation/power-tools/reporter/fetch-download): Check report status and download when ready
+
+    - **Report types**
+    - [Payment report](/implementation/power-tools/reporter/payment-report): Generate reports of all payments with statuses and metadata
+    - [Connect report](/implementation/power-tools/reporter/connect-report): Statement of your Volt Connect account (cash management)
+    - [Settlement report](/implementation/power-tools/reporter/settlement-report): Detailed breakdown of settlements
+    - [Audit log reports](/implementation/power-tools/reporter/audit-log-report): Track all operations and changes in your account
+  - Pay by Link
+    - [Pay by Link](/implementation/power-tools/pay-by-link): Send secure payment links via all communication channels
+    - [Generate links from Fuzebox](/implementation/power-tools/pay-by-link/generate-link-fuzebox): How to generate Pay by Link payment links from Fuzebox
+  - [Matchmeter](/implementation/power-tools/matchmeter): Name matching using machine learning
+  - [Circuit Breaker](/implementation/power-tools/circuit-breaker): Detect and prevent payment fraud
+
+  - **Reference**
+  - [Payment processing times](/implementation/reference/payment-processing-times): Expected processing times for different payment schemes

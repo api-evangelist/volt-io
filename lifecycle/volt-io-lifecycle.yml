@@ -1,0 +1,23 @@
+generated: '2026-07-24'
+method: searched
+source: docs.volt.io + status.volt.io
+versioning:
+  scheme: spec-version
+  current: '1.0.0'
+  note: >-
+    Accounts API OpenAPI is versioned at 1.0.0 and published under a versioned
+    path (descriptions/1.0.0/) in github.com/volt-io/volt-io-accounts. The
+    gateway Payments API has a legacy version and a current Global Unified
+    Payments API.
+deprecation:
+  policy_url: https://docs.volt.io/implementation/payments/migration-guide
+  note: >-
+    Volt documents a migration guide from the legacy Payments API to the Global
+    Unified Payments API, indicating a managed deprecation path for the legacy
+    surface.
+  sunset_header: unknown
+status_page: https://status.volt.io/
+sla:
+  url: null
+  note: No public SLA / uptime target document found.
+deprecated_operations: []
