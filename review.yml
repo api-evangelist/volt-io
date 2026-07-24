@@ -1,0 +1,172 @@
+aid: volt-io
+name: Volt
+review:
+  question: >-
+    Does Volt publish a real, self-serve developer portal and a downloadable
+    OpenAPI/Swagger definition for its account-to-account payments APIs?
+  answer: partial
+  date: '2026-07-24'
+  reviewer: API Evangelist
+findings:
+  summary: >-
+    Volt (volt.io) is an API-native, real-time account-to-account ("pay by
+    bank") payments company headquartered in London, with the United Kingdom as
+    its home market and FCA authorisation. It operates a genuine public
+    developer surface: a marketing developer landing page at
+    https://volt.io/developers/ (HTTP 200) and a full developer portal /
+    documentation site at https://docs.volt.io/ (HTTP 200) with an OpenAPI-
+    backed API reference at https://docs.volt.io/api-reference (HTTP 200). The
+    reference is a custom Next.js application that renders OpenAPI schemas
+    server-side; it advertises "View the Volt API OpenAPI schemas" but does NOT
+    expose a downloadable OpenAPI/Swagger document at any fetchable path.
+    Every candidate probed returned 404 or a soft-404 SPA/Docusaurus shell
+    (see specHunt below), so ZERO OpenAPI specs were harvested verbatim. The
+    documented product API family is: Payments (Global Payments API), Mandates
+    (recurring payments / VRP), Accounts (Volt Accounts, virtual IBANs, payouts,
+    refunds, collections), Verify (account identification / confirmation of
+    payee), Reporting (Reporter), plus an Authentication (OAuth) endpoint, with
+    a legacy Gateway API and legacy Accounts API also documented. The single
+    production gateway host is https://gateway.volt.io with a sandbox at
+    https://gateway.sandbox.volt.io. Authentication is OAuth2 resource-owner
+    password grant: POST /oauth with grant_type, client_id, client_secret,
+    username and password returns a Bearer access_token used on all calls.
+    Webhooks are documented for asynchronous payment/account events. No public
+    GitHub organisation for the payments company was found (github.com/volt-api
+    is an unrelated Zig CLI project), and no public Postman collection or
+    GraphQL/gRPC surface was found.
+  homeMarket: United Kingdom
+  developerPortal:
+    landingURL: https://volt.io/developers/
+    landingStatus: 200
+    docsURL: https://docs.volt.io/
+    docsStatus: 200
+    apiReferenceURL: https://docs.volt.io/api-reference
+    apiReferenceStatus: 200
+    confirmed: true
+    framework: Custom Next.js (turbopack); OpenAPI schemas rendered server-side
+  authModel:
+    scheme: OAuth2
+    grant: password (resource-owner password credentials)
+    tokenEndpoint: POST https://gateway.volt.io/oauth
+    tokenRequestParams:
+      - grant_type
+      - client_id
+      - client_secret
+      - username
+      - password
+    tokenType: Bearer access_token
+    source: https://docs.volt.io/api-reference/authentication/post-oauth
+  baseURLs:
+    production: https://gateway.volt.io
+    sandbox: https://gateway.sandbox.volt.io
+  productFamily:
+    - name: Payments (Global Payments API)
+      url: https://docs.volt.io/api-reference/payments
+      status: 200
+    - name: Mandates (Recurring Payments / VRP)
+      url: https://docs.volt.io/api-reference/mandates
+      status: 200
+    - name: Accounts (Volt Accounts / virtual IBANs / payouts / refunds)
+      url: https://docs.volt.io/api-reference/accounts
+      status: 200
+    - name: Verify (Account Identification / Confirmation of Payee)
+      url: https://docs.volt.io/api-reference/verify
+      status: 200
+    - name: Reporting (Reporter)
+      url: https://docs.volt.io/api-reference/reporter
+      status: 200
+    - name: Authentication (OAuth)
+      url: https://docs.volt.io/api-reference/authentication/post-oauth
+      status: 200
+    - name: Gateway API (legacy)
+      url: https://docs.volt.io/api-reference/gateway-legacy
+      status: documented (legacy/deprecated)
+    - name: Accounts API (legacy)
+      url: https://docs.volt.io/api-reference/accounts-legacy
+      status: documented (legacy/deprecated)
+  webhooks:
+    documented: true
+    url: https://docs.volt.io/implementation/webhooks
+    status: 200
+    asyncapiPublished: false
+    note: >-
+      Webhooks are documented for asynchronous payment and account events; no
+      AsyncAPI document is published.
+  openapi:
+    downloadable: false
+    specsHarvested: 0
+    note: >-
+      The API reference states OpenAPI schemas back the docs but no source
+      OpenAPI/Swagger file is served at a fetchable URL. All probed candidates
+      returned 404 or a soft-404 HTML shell.
+  postman:
+    found: false
+  graphql:
+    found: false
+  githubOrganization:
+    found: false
+    note: >-
+      github.com/volt-api exists but is an unrelated Zig-based "Volt API client"
+      CLI project, not the volt.io payments company.
+  scheduleAndRails:
+    rails:
+      - UK Faster Payments / Open Banking (PSD2 payment initiation)
+      - SEPA (Europe)
+      - Pix (Brazil)
+      - PayTo (Australia)
+    iso20022Posture: >-
+      Volt is an open-banking A2A aggregator that initiates payments over
+      domestic real-time and instant-payment schemes; it does not publish its
+      own ISO 20022 message specifications. Scheme-level message formats are
+      handled behind its gateway API.
+  transports:
+    - protocol: REST
+      scheme: https
+      baseURL: https://gateway.volt.io
+      documented: true
+    - protocol: Webhooks
+      scheme: https
+      documented: true
+      note: Asynchronous payment/account event callbacks.
+    - protocol: GraphQL
+      documented: false
+    - protocol: gRPC
+      documented: false
+    - protocol: WebSocket
+      documented: false
+  specHunt:
+    - url: https://api.volt.io/openapi.json
+      status: 404
+    - url: https://api.volt.io/swagger.json
+      status: 404
+    - url: https://docs.volt.io/openapi.json
+      status: 404
+    - url: https://docs.volt.io/openapi.yaml
+      status: 404
+    - url: https://docs.volt.io/api-reference/payments.json
+      status: 404
+    - url: https://docs.volt.io/openapi/payments.json
+      status: 404
+    - url: https://docs.rc.volt.io/openapi.json
+      status: 200 (soft-404 Docusaurus HTML, not a spec)
+    - url: https://docs.rc.volt.io/assets/openapi.json
+      status: 200 (soft-404 Docusaurus HTML, not a spec)
+    - url: https://api.rc.volt.io/openapi.json
+      status: 403
+sources:
+  - url: https://volt.io/
+    type: Website
+  - url: https://volt.io/developers/
+    type: DeveloperPortal
+    note: Developer landing page (HTTP 200).
+  - url: https://docs.volt.io/
+    type: Documentation
+    note: Developer portal / documentation (HTTP 200).
+  - url: https://docs.volt.io/api-reference
+    type: APIReference
+    note: OpenAPI-backed API reference, custom Next.js (HTTP 200); no downloadable spec.
+  - url: https://docs.volt.io/api-reference/authentication/post-oauth
+    type: APIReference
+    note: OAuth2 password grant; POST /oauth returns Bearer access_token; gateway.volt.io + gateway.sandbox.volt.io.
+  - url: https://status.volt.io/
+    type: StatusPage
