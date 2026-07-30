@@ -42,10 +42,9 @@ apis:
 - aid: volt-io:volt-payments-api
   name: Volt Payments API
   description: >-
-    Volt's Global Payments API initiates account-to-account (pay by bank)
-    payments across open-banking and real-time schemes (UK Faster Payments,
-    SEPA, Pix, PayTo and more), creating payments, retrieving status, and
-    handling refunds through a single gateway.
+    Volt's Global Payments API initiates account-to-account (pay by bank) payments across open-banking
+    and real-time schemes (UK Faster Payments, SEPA, Pix, PayTo and more), creating payments, retrieving
+    status, and handling refunds through a single gateway.
   humanURL: https://docs.volt.io/api-reference/payments
   baseURL: https://gateway.volt.io
   tags:
@@ -60,9 +59,9 @@ apis:
 - aid: volt-io:volt-mandates-api
   name: Volt Mandates API
   description: >-
-    The Mandates API manages recurring account-to-account payments, including
-    variable recurring payments (VRP) and mandate lifecycle, letting merchants
-    set up and collect repeat bank payments under a customer mandate.
+    The Mandates API manages recurring account-to-account payments, including variable recurring payments
+    (VRP) and mandate lifecycle, letting merchants set up and collect repeat bank payments under a customer
+    mandate.
   humanURL: https://docs.volt.io/api-reference/mandates
   baseURL: https://gateway.volt.io
   tags:
@@ -77,9 +76,8 @@ apis:
 - aid: volt-io:volt-accounts-api
   name: Volt Accounts API
   description: >-
-    The Accounts API powers Volt Accounts and virtual IBANs for settlement,
-    collections, payouts and refunds, giving merchants programmatic named
-    accounts for receiving and disbursing funds within the Volt network.
+    The Accounts API powers Volt Accounts and virtual IBANs for settlement, collections, payouts and refunds,
+    giving merchants programmatic named accounts for receiving and disbursing funds within the Volt network.
   humanURL: https://docs.volt.io/api-reference/accounts
   baseURL: https://accounts.volt.io
   tags:
@@ -104,9 +102,8 @@ apis:
 - aid: volt-io:volt-verify-api
   name: Volt Verify API
   description: >-
-    The Verify (Account Identification) API confirms bank account ownership and
-    details before payment, supporting confirmation-of-payee style checks to
-    reduce misdirected payments and fraud.
+    The Verify (Account Identification) API confirms bank account ownership and details before payment,
+    supporting confirmation-of-payee style checks to reduce misdirected payments and fraud.
   humanURL: https://docs.volt.io/api-reference/verify
   baseURL: https://gateway.volt.io
   tags:
@@ -121,9 +118,8 @@ apis:
 - aid: volt-io:volt-reporting-api
   name: Volt Reporting API
   description: >-
-    The Reporting (Reporter) API exposes transaction, settlement and
-    reconciliation data so merchants can retrieve reports on payments,
-    payouts and account activity across the Volt platform.
+    The Reporting (Reporter) API exposes transaction, settlement and reconciliation data so merchants
+    can retrieve reports on payments, payouts and account activity across the Volt platform.
   humanURL: https://docs.volt.io/api-reference/reporter
   baseURL: https://gateway.volt.io
   tags:
@@ -137,10 +133,9 @@ apis:
 - aid: volt-io:volt-authentication-api
   name: Volt Authentication API
   description: >-
-    The Authentication API issues OAuth2 access tokens for the Volt gateway. A
-    POST to /oauth exchanges client_id, client_secret and username/password
-    (resource-owner password grant) for a Bearer access_token used on all other
-    API calls.
+    The Authentication API issues OAuth2 access tokens for the Volt gateway. A POST to /oauth exchanges
+    client_id, client_secret and username/password (resource-owner password grant) for a Bearer access_token
+    used on all other API calls.
   humanURL: https://docs.volt.io/api-reference/authentication/post-oauth
   baseURL: https://gateway.volt.io
   tags:
@@ -151,6 +146,14 @@ apis:
     url: https://docs.volt.io/implementation/essentials/authentication
   - type: APIReference
     url: https://docs.volt.io/api-reference/authentication/post-oauth
+- aid: volt-io:volt-io-accounts-common
+  name: Volt Global Api Accounts
+  description: Volt Global Api Accounts from Volt, described in OpenAPI.
+  humanURL: https://docs.volt.io/api-reference/payments
+  baseURL: https://gateway.volt.io
+  properties:
+  - type: OpenAPI
+    url: openapi/volt-io-accounts-common.yaml
 common:
 - type: VulnerabilityDisclosure
   url: security/volt-io-vulnerability-disclosure.yml
