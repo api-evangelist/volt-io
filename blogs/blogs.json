@@ -1,0 +1,21 @@
+{
+  "repo": "volt-io",
+  "feeds": [
+    {
+      "source": "https://status.volt.io/feed.rss",
+      "feed_url": "https://status.volt.io/feed.rss",
+      "title": "",
+      "saved": 0,
+      "method": "feed"
+    },
+    {
+      "source": "https://status.volt.io/",
+      "feed_url": "https://status.volt.io/feed.rss",
+      "title": "",
+      "saved": 0,
+      "method": "discovered"
+    }
+  ],
+  "post_count": 2,
+  "fetched": "2026-08-01T15:49:00Z"
+}

@@ -15,7 +15,8 @@ surfaces:
   graphql: null
   mcp:
     url: null
-    status: candidate (derived from OpenAPI; not a published server)
+    status: candidate
+    status_raw: candidate
 crosswalk:
 - tool: list_transactions
   category: transactions
