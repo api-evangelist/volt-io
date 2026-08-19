@@ -37,7 +37,7 @@ tags:
 - Pay by Bank
 created: '2026-07-24'
 modified: '2026-07-24'
-specificationVersion: '0.19'
+specificationVersion: '0.23'
 apis:
 - aid: volt-io:volt-payments-api
   name: Volt Payments API
