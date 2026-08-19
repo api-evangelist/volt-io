@@ -2,12 +2,10 @@ generated: '2026-07-24'
 method: derived
 status: candidate
 source: openapi/volt-io-accounts-openapi-original.yaml
-notes: >-
-  No official hosted/remote Volt MCP server was found (no listing in the MCP
-  registry, npm @modelcontextprotocol, or Volt docs as of this review). This is
-  a DERIVED candidate tool list mapped one-to-one from the Volt Accounts API
-  OpenAPI operations; each tool inherits its real inputSchema from the backing
-  operation's parameters + requestBody. Not published by Volt.
+notes: No official hosted/remote Volt MCP server was found (no listing in the MCP registry, npm @modelcontextprotocol,
+  or Volt docs as of this review). This is a DERIVED candidate tool list mapped one-to-one from the Volt
+  Accounts API OpenAPI operations; each tool inherits its real inputSchema from the backing operation's
+  parameters + requestBody. Not published by Volt.
 server:
   name: volt-io-accounts
   transport: http
@@ -76,3 +74,9 @@ tools:
 - name: reverse_incoming_transaction
   description: Sandbox - simulate reversing an incoming transaction
   source_operation: openapi/volt-io-accounts-openapi-original.yaml#reverse-incoming-transaction
+deployment:
+  mode: none
+  verified: derived
+  tools: 21
+  checked: '2026-08-12'
+  source: catalog MCP census
