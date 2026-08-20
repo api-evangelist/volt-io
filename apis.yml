@@ -140,6 +140,8 @@ apis:
   baseURL: https://gateway.volt.io
   tags:
   - Authentication
+  tags_raw:
+  - Authentication
   - OAuth2
   properties:
   - type: Documentation
