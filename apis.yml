@@ -73,32 +73,6 @@ apis:
     url: https://docs.volt.io/implementation/mandates
   - type: APIReference
     url: https://docs.volt.io/api-reference/mandates
-- aid: volt-io:volt-accounts-api
-  name: Volt Accounts API
-  description: >-
-    The Accounts API powers Volt Accounts and virtual IBANs for settlement, collections, payouts and refunds,
-    giving merchants programmatic named accounts for receiving and disbursing funds within the Volt network.
-  humanURL: https://docs.volt.io/api-reference/accounts
-  baseURL: https://accounts.volt.io
-  tags:
-  - Volt Accounts
-  - Virtual IBAN
-  - Payouts
-  properties:
-  - type: Documentation
-    url: https://docs.volt.io/implementation/volt-accounts
-  - type: APIReference
-    url: https://docs.volt.io/api-reference/accounts
-  - type: OpenAPI
-    url: openapi/volt-io-accounts-openapi-original.yaml
-  - type: Overlay
-    url: overlays/volt-io-accounts-overlay.yaml
-  - type: MCPServer
-    url: mcp/volt-io-mcp.yml
-  - type: ToolCrosswalk
-    url: mcp/volt-io-tool-crosswalk.yml
-  - type: DataModel
-    url: data-model/volt-io-data-model.yml
 - aid: volt-io:volt-verify-api
   name: Volt Verify API
   description: >-
@@ -148,15 +122,138 @@ apis:
     url: https://docs.volt.io/implementation/essentials/authentication
   - type: APIReference
     url: https://docs.volt.io/api-reference/authentication/post-oauth
-- aid: volt-io:volt-io-accounts-common
-  name: Volt Global Api Accounts
-  description: Volt Global Api Accounts from Volt, described in OpenAPI.
+- aid: volt-io:volt-io-account-holder-verification-api
+  name: Volt Account Holder Verification API
+  description: Verification services for ensuring beneficiary account ownership.
   humanURL: https://docs.volt.io/api-reference/payments
   baseURL: https://gateway.volt.io
+  tags:
+  - Account Holder Verification
   properties:
   - type: OpenAPI
-    url: openapi/volt-io-accounts-common.yaml
+    url: openapi/volt-io-account-holder-verification-api-openapi.yml
+  - type: Documentation
+    url: https://docs.volt.io/implementation/volt-accounts
+  - type: APIReference
+    url: https://docs.volt.io/api-reference/accounts
+  - type: ToolCrosswalk
+    url: mcp/volt-io-tool-crosswalk.yml
+  - type: DataModel
+    url: data-model/volt-io-data-model.yml
+- aid: volt-io:volt-io-accounts-api
+  name: Volt Accounts API
+  description: Management of accounts.
+  humanURL: https://docs.volt.io/api-reference/payments
+  baseURL: https://gateway.volt.io
+  tags:
+  - Accounts
+  properties:
+  - type: OpenAPI
+    url: openapi/volt-io-accounts-api-openapi.yml
+  - type: Documentation
+    url: https://docs.volt.io/implementation/volt-accounts
+  - type: APIReference
+    url: https://docs.volt.io/api-reference/accounts
+  - type: ToolCrosswalk
+    url: mcp/volt-io-tool-crosswalk.yml
+  - type: DataModel
+    url: data-model/volt-io-data-model.yml
+- aid: volt-io:volt-io-aliases-api
+  name: Volt Aliases API
+  description: Issuance and management of account aliases for global reconciliation.
+  humanURL: https://docs.volt.io/api-reference/payments
+  baseURL: https://gateway.volt.io
+  tags:
+  - Aliases
+  properties:
+  - type: OpenAPI
+    url: openapi/volt-io-aliases-api-openapi.yml
+  - type: Documentation
+    url: https://docs.volt.io/implementation/volt-accounts
+  - type: APIReference
+    url: https://docs.volt.io/api-reference/accounts
+  - type: ToolCrosswalk
+    url: mcp/volt-io-tool-crosswalk.yml
+  - type: DataModel
+    url: data-model/volt-io-data-model.yml
+- aid: volt-io:volt-io-named-accounts-api
+  name: Volt Named Accounts API
+  description: Named account order operations.
+  humanURL: https://docs.volt.io/api-reference/payments
+  baseURL: https://gateway.volt.io
+  tags:
+  - Named Accounts
+  properties:
+  - type: OpenAPI
+    url: openapi/volt-io-named-accounts-api-openapi.yml
+  - type: Documentation
+    url: https://docs.volt.io/implementation/volt-accounts
+  - type: APIReference
+    url: https://docs.volt.io/api-reference/accounts
+  - type: ToolCrosswalk
+    url: mcp/volt-io-tool-crosswalk.yml
+  - type: DataModel
+    url: data-model/volt-io-data-model.yml
+- aid: volt-io:volt-io-sandbox-api
+  name: Volt Sandbox API
+  description: Operations related to sandbox operations.
+  humanURL: https://docs.volt.io/api-reference/payments
+  baseURL: https://gateway.volt.io
+  tags:
+  - Sandbox
+  properties:
+  - type: OpenAPI
+    url: openapi/volt-io-sandbox-api-openapi.yml
+  - type: Documentation
+    url: https://docs.volt.io/implementation/volt-accounts
+  - type: APIReference
+    url: https://docs.volt.io/api-reference/accounts
+  - type: ToolCrosswalk
+    url: mcp/volt-io-tool-crosswalk.yml
+  - type: DataModel
+    url: data-model/volt-io-data-model.yml
+- aid: volt-io:volt-io-transactions-api
+  name: Volt Transactions API
+  description: >-
+    Operations related to movement of funds, including payouts, settlements, and internal transactions.
+  humanURL: https://docs.volt.io/api-reference/payments
+  baseURL: https://gateway.volt.io
+  tags:
+  - Transactions
+  properties:
+  - type: OpenAPI
+    url: openapi/volt-io-transactions-api-openapi.yml
+  - type: Documentation
+    url: https://docs.volt.io/implementation/volt-accounts
+  - type: APIReference
+    url: https://docs.volt.io/api-reference/accounts
+  - type: ToolCrosswalk
+    url: mcp/volt-io-tool-crosswalk.yml
+  - type: DataModel
+    url: data-model/volt-io-data-model.yml
+- aid: volt-io:volt-io-trusted-accounts-api
+  name: Volt Trusted accounts API
+  description: Operations related to trusted accounts.
+  humanURL: https://docs.volt.io/api-reference/payments
+  baseURL: https://gateway.volt.io
+  tags:
+  - Trusted accounts
+  properties:
+  - type: OpenAPI
+    url: openapi/volt-io-trusted-accounts-api-openapi.yml
+  - type: Documentation
+    url: https://docs.volt.io/implementation/volt-accounts
+  - type: APIReference
+    url: https://docs.volt.io/api-reference/accounts
+  - type: ToolCrosswalk
+    url: mcp/volt-io-tool-crosswalk.yml
+  - type: DataModel
+    url: data-model/volt-io-data-model.yml
 common:
+- type: Overlay
+  url: overlays/volt-io-accounts-overlay.yaml
+- type: MCPServer
+  url: mcp/volt-io-mcp.yml
 - type: VulnerabilityDisclosure
   url: security/volt-io-vulnerability-disclosure.yml
 - type: DomainSecurity
