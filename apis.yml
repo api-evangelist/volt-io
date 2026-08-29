@@ -23,6 +23,18 @@ description: >-
   accounts, settlement) in the github.com/volt-io/volt-io-accounts repository,
   and ships first-party mobile checkout SDKs (iOS/Android) plus e-commerce
   plugins in the same GitHub organization.
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: true
+  label: Hosted service · you call their endpoint
+  confidence: high
+  source:
+  - openapi
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
 tags:
 - Payments
