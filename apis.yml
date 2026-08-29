@@ -262,6 +262,9 @@ apis:
   - type: DataModel
     url: data-model/volt-io-data-model.yml
 common:
+- type: CapabilityMap
+  url: capabilities/volt-io-capability-edges.yml
+  name: Volt Business Capability Map
 - type: Overlay
   url: overlays/volt-io-accounts-overlay.yaml
 - type: MCPServer
