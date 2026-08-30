@@ -1,0 +1,430 @@
+openapi: 3.2.0
+info:
+  title: Global Api Accounts Named Accounts API
+  version: 1.0.0
+  description: "## API idempotency \nEach `POST` request creating a resource (for example a transaction) requires to send a unique idempotency key. It is included in the `Idempotency-Key` HTTP header. Idempotency key helps prevent duplicates in your `POST` requests. We recommend using an **UUID** for the key, however you may use any other unique identifier you choose.\n\n#### Preventing duplicates \nIf we have already processed the request and you send a request using the same idempotency key, it will fail with an error, returning a ```409 Conflict``` response.\n\n## Case-sensitivity\nAll properties/keys within request's/response's payload are case-sensitive.\n\nHTTP headers' names are case-insensitive.\n\n## API base URL\n**Sandbox: [https://accounts.sandbox.volt.io]()**\n\n**Production: [https://accounts.volt.io]()**"
+  contact:
+    email: support@volt.io
+    name: Volt Support
+    url: https://www.volt.io/contact/
+servers:
+- url: https://accounts.sandbox.volt.io
+  description: Sandbox
+- url: https://accounts.volt.io
+  description: Production
+security:
+- BearerAuth: []
+tags:
+- name: Named Accounts
+  description: Named account order operations.
+paths:
+  /orders/named-accounts:
+    post:
+      tags:
+      - Named Accounts
+      summary: Create named account order
+      operationId: create-named-account-order
+      parameters:
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/XVoltApiVersion'
+      - $ref: '#/components/parameters/XVoltTestingScenario'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NamedAccountOrderRequest'
+            example:
+              onboardingEntityId: a1b2c3d4-5678-90ab-cdef-1234567890ab
+              currency: EUR
+              communication:
+                notifications:
+                  url: https://mywebsite.com/webhooks
+      responses:
+        '202':
+          description: Named account order has been accepted
+          headers:
+            Location:
+              schema:
+                type: string
+                format: uri
+              description: Location of the named account order resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NamedAccountOrderDetails'
+              example:
+                id: order-5678-90ab-cdef-1234567890ab
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '409':
+          $ref: '#/components/responses/409'
+        '422':
+          $ref: '#/components/responses/422'
+        '500':
+          $ref: '#/components/responses/500'
+  /orders/named-accounts/{id}:
+    get:
+      tags:
+      - Named Accounts
+      summary: Get named account order status
+      operationId: get-named-account-order-status
+      parameters:
+      - $ref: '#/components/parameters/XVoltApiVersion'
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: Unique identifier of the named account order
+      responses:
+        '200':
+          description: Named account order details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NamedAccountOrderDetails'
+              examples:
+                processingExample:
+                  $ref: '#/components/examples/NamedAccountOrderProcessingExample'
+                completedExample:
+                  $ref: '#/components/examples/NamedAccountOrderCompletedExample'
+                failedExample:
+                  $ref: '#/components/examples/NamedAccountOrderFailedExample'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
+components:
+  schemas:
+    Error401Response:
+      type: object
+      description: Error response for HTTP 401 Unauthorized.
+      properties:
+        code:
+          type: string
+          description: Error code.
+          enum:
+          - UNAUTHORISED
+        message:
+          type: string
+          description: Error message.
+      required:
+      - code
+      - message
+    Error403Response:
+      type: object
+      description: Error response for HTTP 403 Forbidden.
+      properties:
+        code:
+          type: string
+          description: Error code.
+          enum:
+          - ACCESS_DENIED
+        message:
+          type: string
+          description: Error message.
+      required:
+      - code
+      - message
+    NamedAccountOrderRequest:
+      type: object
+      description: Request to create a named account from an approved onboarding.
+      required:
+      - onboardingEntityId
+      - currency
+      properties:
+        onboardingEntityId:
+          type: string
+          format: uuid
+          description: ID of the approved onboarding entity
+        currency:
+          $ref: '#/components/schemas/CurrencyCode'
+        communication:
+          $ref: '#/components/schemas/Communication'
+    NamedAccountOrderStatusEnum:
+      type: string
+      description: Current status of the named account order
+      enum:
+      - PROCESSING
+      - COMPLETED
+      - FAILED
+    Error500Response:
+      type: object
+      description: Error response for HTTP 500 Internal Server Error.
+      properties:
+        code:
+          type: string
+          description: Error code.
+          enum:
+          - INTERNAL_SERVER_ERROR
+        message:
+          type: string
+          description: Error message.
+      required:
+      - code
+      - message
+    Communication:
+      type: object
+      properties:
+        notifications:
+          type: object
+          description: Settings for webhook notifications delivery.
+          properties:
+            url:
+              type: string
+              pattern: ^https?://[^ ]+$
+              description: URL where the notifications (webhooks) are going to be sent when the transaction status changes. This value will take precedence over Fuzebox configuration. Provide a value here only if you need to overwrite it. Note that a default notifications URL must be configured in Fuzebox for notifications to be delivered; if it is not configured, no notification will be sent even when this overwrite URL is provided.
+              example: https://mywebsite.com/webhooks
+    Error422Response:
+      type: object
+      description: Error response for HTTP 422 Unprocessable Entity.
+      properties:
+        code:
+          type: string
+          description: Error code.
+          enum:
+          - VALIDATION_FAILURE
+        message:
+          type: string
+          description: Error message.
+        errors:
+          type: array
+          description: Field validation errors.
+          items:
+            $ref: '#/components/schemas/ValidationErrorDetail'
+      required:
+      - code
+      - message
+      - errors
+    Error400Response:
+      type: object
+      description: Error response for HTTP 400 Bad Request.
+      properties:
+        code:
+          type: string
+          description: Error code.
+          enum:
+          - BAD_REQUEST
+          - INVALID_PATH_VARIABLE
+          - MISSING_HTTP_HEADER
+          - INVALID_HTTP_HEADER
+          - MALFORMED_PATH_PARAM
+          - MISSING_QUERY_PARAM
+          - INVALID_QUERY_PARAM
+          - MALFORMED_QUERY_PARAM
+          - CONFIGURATION_ERROR
+        message:
+          type: string
+          description: Error message.
+      required:
+      - code
+      - message
+    ValidationErrorType:
+      $ref: ./error-common.yaml#/components/schemas/ValidationErrorType
+    Error409Response:
+      type: object
+      description: Error response for HTTP 409 Conflict.
+      properties:
+        code:
+          type: string
+          description: Error code.
+          enum:
+          - CONFLICT
+          - IDEMPOTENCY_CONFLICT
+          - RESOURCE_NOT_MODIFIABLE
+        message:
+          type: string
+          description: Error message.
+      required:
+      - code
+      - message
+    Error404Response:
+      type: object
+      description: Error response for HTTP 404 Not Found.
+      properties:
+        code:
+          type: string
+          description: Error code.
+          enum:
+          - RESOURCE_NOT_FOUND
+        message:
+          type: string
+          description: Error message.
+      required:
+      - code
+      - message
+    CurrencyCode:
+      type: string
+      description: Three-letter ISO 4217 currency code.
+      example: EUR
+      pattern: ^[A-Z]{3}$
+    ValidationErrorDetail:
+      type: object
+      description: Details about a specific validation error.
+      properties:
+        type:
+          $ref: '#/components/schemas/ValidationErrorType'
+        propertyPath:
+          type: string
+          description: Points to the specific field or property in the incoming request that violated the validation rule.
+        message:
+          type: string
+          description: Human-readable message about constraint violation.
+    NamedAccountOrderDetails:
+      type: object
+      description: Named account order status and details.
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier of the named account order
+        onboardingEntityId:
+          type: string
+          format: uuid
+          description: ID of the associated onboarding entity
+        accountId:
+          type:
+          - string
+          - 'null'
+          format: uuid
+          description: ID of the created account (only present when status is COMPLETED)
+        status:
+          $ref: '#/components/schemas/NamedAccountOrderStatusEnum'
+        statusReason:
+          type: string
+          description: Reason for the current status (e.g., failure reason)
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp when the order was created
+        completedAt:
+          type: string
+          format: date-time
+          description: Timestamp when the account was created
+    XVoltTestingScenario:
+      type: string
+      enum:
+      - PAYOUT_REJECTED
+      - ACCOUNT_HOLDER_VERIFICATION_CLOSE_MATCH
+      - ACCOUNT_HOLDER_VERIFICATION_NO_MATCH
+      - ACCOUNT_HOLDER_VERIFICATION_ERROR
+      - ONBOARDING_REJECTED
+      - ONBOARDING_ADDITIONAL_INFO_REQUIRED
+      - ONBOARDING_ADDITIONAL_INFO_REQUIRED_NAME_MISMATCH
+      - ONBOARDING_EXPIRED
+      - ORDER_NAMED_ACCOUNTS_FAILED
+  responses:
+    '403':
+      description: '**Access denied** - Although your credentials are correct, your access to this section of the API has been disabled or limited. Subsequent requests to this endpoint will not be processed.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error403Response'
+    '404':
+      description: '**Not found** - The resource that you are requesting cannot be found.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error404Response'
+    '401':
+      description: '**Unauthorized** - Your credentials were invalid. It may be that the token you''ve used has expired. Try re-authenticating with valid or updated credentials and retry this request.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error401Response'
+    '422':
+      description: '**Unprocessable** - Request''s payload validation fails.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error422Response'
+    '409':
+      description: '**Conflict** - Modification of a resource is not possible, because current state of it does not allow it. Or `Idempotency-Key` was already used.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error409Response'
+    '500':
+      description: '**Internal server error** - Something went wrong and request cannot be processed due to server error. Message will contain trace ID and timestamp, which allows to investigate what went wrong.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error500Response'
+    '400':
+      description: '**Bad request** - Request you sent is invalid or malformed. Response will contain a description of the actual problem.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error400Response'
+  parameters:
+    XVoltTestingScenario:
+      name: X-Volt-Testing-Scenario
+      in: header
+      description: '[SANDBOX ONLY] used to trigger specific transaction failure or verification mocks.'
+      required: false
+      schema:
+        $ref: '#/components/schemas/XVoltTestingScenario'
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      description: It helps preventing duplicates in your `POST` requests. It is recommend using a **UUID** for the key, however you may use any other unique identifier you choose.
+      required: true
+      schema:
+        type: string
+        maxLength: 160
+        example: 85136c79cbf9fe36bb9d05d0639c70c265c18d37
+    XVoltApiVersion:
+      name: X-Volt-Api-Version
+      in: header
+      description: Version of the API used. Currently, version `1` is the only version.
+      required: true
+      schema:
+        type: integer
+        example: 1
+        enum:
+        - 1
+  examples:
+    NamedAccountOrderCompletedExample:
+      value:
+        id: order-5678-90ab-cdef-1234567890ab
+        onboardingEntityId: a1b2c3d4-5678-90ab-cdef-1234567890ab
+        accountId: 7523a8d3-70a9-4448-822a-ba1a38e0b715
+        status: COMPLETED
+        statusReason: null
+        createdAt: '2025-12-03T15:00:00Z'
+        completedAt: '2025-12-03T15:05:00Z'
+    NamedAccountOrderFailedExample:
+      value:
+        id: order-5678-90ab-cdef-1234567890ab
+        onboardingEntityId: a1b2c3d4-5678-90ab-cdef-1234567890ab
+        status: FAILED
+        statusReason: Account creation failed due to banking provider error
+        createdAt: '2025-12-03T15:00:00Z'
+        completedAt: null
+    NamedAccountOrderProcessingExample:
+      value:
+        id: order-5678-90ab-cdef-1234567890ab
+        onboardingEntityId: a1b2c3d4-5678-90ab-cdef-1234567890ab
+        status: PROCESSING
+        statusReason: null
+        createdAt: '2025-12-03T15:00:00Z'
+        completedAt: null
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

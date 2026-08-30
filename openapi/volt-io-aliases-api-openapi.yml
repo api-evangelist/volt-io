@@ -1,0 +1,769 @@
+openapi: 3.2.0
+info:
+  title: Global Api Accounts Aliases API
+  version: 1.0.0
+  description: "## API idempotency \nEach `POST` request creating a resource (for example a transaction) requires to send a unique idempotency key. It is included in the `Idempotency-Key` HTTP header. Idempotency key helps prevent duplicates in your `POST` requests. We recommend using an **UUID** for the key, however you may use any other unique identifier you choose.\n\n#### Preventing duplicates \nIf we have already processed the request and you send a request using the same idempotency key, it will fail with an error, returning a ```409 Conflict``` response.\n\n## Case-sensitivity\nAll properties/keys within request's/response's payload are case-sensitive.\n\nHTTP headers' names are case-insensitive.\n\n## API base URL\n**Sandbox: [https://accounts.sandbox.volt.io]()**\n\n**Production: [https://accounts.volt.io]()**"
+  contact:
+    email: support@volt.io
+    name: Volt Support
+    url: https://www.volt.io/contact/
+servers:
+- url: https://accounts.sandbox.volt.io
+  description: Sandbox
+- url: https://accounts.volt.io
+  description: Production
+security:
+- BearerAuth: []
+tags:
+- name: Aliases
+  description: Issuance and management of account aliases for global reconciliation.
+paths:
+  /accounts/{accountId}/aliases:
+    get:
+      tags:
+      - Aliases
+      summary: List of aliases for an account
+      operationId: get-aliases
+      parameters:
+      - $ref: '#/components/parameters/XVoltApiVersion'
+      - $ref: '#/components/parameters/LimitParam'
+      - $ref: '#/components/parameters/PageParam'
+      - name: accountId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: Unique identifier of the account
+      - name: orderId
+        in: query
+        description: Filter aliases by the order id they were created with.
+        required: false
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: List of aliases for the account
+          headers:
+            limit:
+              $ref: '#/components/headers/PaginationLimit'
+            page:
+              $ref: '#/components/headers/PaginationPage'
+            page-count:
+              $ref: '#/components/headers/PaginationPageCount'
+            total-items:
+              $ref: '#/components/headers/PaginationTotalItems'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AliasMinimalDetails'
+              example:
+              - id: 06949674-d65c-4266-a2c6-23bce4a80a81
+                currency: EUR
+                identifications:
+                - iban: DE33500105173822933531
+                  bic: ALBPPLPW
+                name: Virtual account
+                customerId: dab4dd0c-d63b-439c-9c47-722ce7a01b60
+                accountId: ca52ea87-a0e3-4371-b301-63309d2e0aa3
+                active: true
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '405':
+          $ref: '#/components/responses/405'
+        '406':
+          $ref: '#/components/responses/406'
+        '415':
+          $ref: '#/components/responses/415'
+        '422':
+          $ref: '#/components/responses/422'
+        '500':
+          $ref: '#/components/responses/500'
+  /orders/account-aliases:
+    post:
+      tags:
+      - Aliases
+      operationId: order-aliases
+      summary: Order aliases
+      parameters:
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/XVoltApiVersion'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AliasesOrderRequest'
+      responses:
+        '201':
+          description: Order for issuing account aliases created successfully.
+          headers:
+            Location:
+              schema:
+                type: string
+                format: uri
+              description: Location of created aliases order.
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Response containing the identifier of the created aliases order.
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    description: Unique ID of the aliases order.
+                    example: 57ad1a6b-95ac-4b33-8c92-311cda8f3c99
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '405':
+          $ref: '#/components/responses/405'
+        '406':
+          $ref: '#/components/responses/406'
+        '409':
+          $ref: '#/components/responses/409'
+        '415':
+          $ref: '#/components/responses/415'
+        '422':
+          $ref: '#/components/responses/422'
+        '500':
+          $ref: '#/components/responses/500'
+  /orders/account-aliases/{id}:
+    get:
+      tags:
+      - Aliases
+      operationId: get-alias-order-status
+      summary: Get alias order status
+      parameters:
+      - $ref: '#/components/parameters/XVoltApiVersion'
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: Unique identifier of the alias order
+      responses:
+        '200':
+          description: Alias order details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AliasOrderDetails'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
+  /account-aliases/{aliasId}:
+    get:
+      tags:
+      - Aliases
+      summary: Get alias details
+      operationId: get-alias-details
+      parameters:
+      - $ref: '#/components/parameters/XVoltApiVersion'
+      - name: aliasId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: Unique identifier of the alias
+      responses:
+        '200':
+          description: Details of alias
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AliasDetails'
+              example:
+                id: 06949674-d65c-4266-a2c6-23bce4a80a81
+                currency: EUR
+                identifications:
+                - iban: DE33500105173822933531
+                  bic: ALBPPLPW
+                name: Virtual account
+                customerId: dab4dd0c-d63b-439c-9c47-722ce7a01b60
+                accountId: ca52ea87-a0e3-4371-b301-63309d2e0aa3
+                orderId: 22cb500c-fe26-47ec-bd62-2023d674a8e3
+                active: true
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '405':
+          $ref: '#/components/responses/405'
+        '406':
+          $ref: '#/components/responses/406'
+        '415':
+          $ref: '#/components/responses/415'
+        '422':
+          $ref: '#/components/responses/422'
+        '500':
+          $ref: '#/components/responses/500'
+    patch:
+      tags:
+      - Aliases
+      summary: Change state of alias
+      operationId: change-alias-state
+      description: Marks the specified alias as active or inactive.
+      parameters:
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/XVoltApiVersion'
+      - name: aliasId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: Unique identifier of the alias
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangeAliasStateRequest'
+      responses:
+        '200':
+          description: alias successfully updated
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '405':
+          $ref: '#/components/responses/405'
+        '406':
+          $ref: '#/components/responses/406'
+        '409':
+          $ref: '#/components/responses/409'
+        '415':
+          $ref: '#/components/responses/415'
+        '422':
+          $ref: '#/components/responses/422'
+        '500':
+          $ref: '#/components/responses/500'
+  /account-aliases/{aliasId}/close:
+    post:
+      tags:
+      - Aliases
+      summary: Close alias
+      operationId: close-alias
+      description: Permanently closes the specified alias. A closed alias cannot be reopened or used for further transactions.
+      parameters:
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/XVoltApiVersion'
+      - name: aliasId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: Unique identifier of the alias to be closed.
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AliasCloseRequest'
+      responses:
+        '200':
+          description: Alias successfully closed.
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '409':
+          $ref: '#/components/responses/409'
+        '415':
+          $ref: '#/components/responses/415'
+        '422':
+          $ref: '#/components/responses/422'
+        '500':
+          $ref: '#/components/responses/500'
+components:
+  schemas:
+    Error401Response:
+      type: object
+      description: Error response for HTTP 401 Unauthorized.
+      properties:
+        code:
+          type: string
+          description: Error code.
+          enum:
+          - UNAUTHORISED
+        message:
+          type: string
+          description: Error message.
+      required:
+      - code
+      - message
+    Error403Response:
+      type: object
+      description: Error response for HTTP 403 Forbidden.
+      properties:
+        code:
+          type: string
+          description: Error code.
+          enum:
+          - ACCESS_DENIED
+        message:
+          type: string
+          description: Error message.
+      required:
+      - code
+      - message
+    AliasMinimalDetails:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        currency:
+          $ref: '#/components/schemas/CurrencyCode'
+        identifications:
+          $ref: '#/components/schemas/Identifications'
+        name:
+          type: string
+        customerId:
+          type: string
+          format: uuid
+        accountId:
+          type: string
+          format: uuid
+        orderId:
+          type: string
+          format: uuid
+        active:
+          type: boolean
+    AliasOrderStatusEnum:
+      type: string
+      description: Current status of the alias order
+      enum:
+      - PROCESSING
+      - COMPLETED
+      - FAILED
+    AliasOrderLinks:
+      type: object
+      properties:
+        self:
+          $ref: '#/components/schemas/LinkObject'
+        aliases:
+          $ref: '#/components/schemas/LinkObject'
+    Error500Response:
+      type: object
+      description: Error response for HTTP 500 Internal Server Error.
+      properties:
+        code:
+          type: string
+          description: Error code.
+          enum:
+          - INTERNAL_SERVER_ERROR
+        message:
+          type: string
+          description: Error message.
+      required:
+      - code
+      - message
+    Communication:
+      type: object
+      properties:
+        notifications:
+          type: object
+          description: Settings for webhook notifications delivery.
+          properties:
+            url:
+              type: string
+              pattern: ^https?://[^ ]+$
+              description: URL where the notifications (webhooks) are going to be sent when the transaction status changes. This value will take precedence over Fuzebox configuration. Provide a value here only if you need to overwrite it. Note that a default notifications URL must be configured in Fuzebox for notifications to be delivered; if it is not configured, no notification will be sent even when this overwrite URL is provided.
+              example: https://mywebsite.com/webhooks
+    AliasDetails:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/AliasMinimalDetails'
+      - type: object
+        properties:
+          _links:
+            type: object
+            properties:
+              self:
+                $ref: '#/components/schemas/LinkObject'
+    Error422Response:
+      type: object
+      description: Error response for HTTP 422 Unprocessable Entity.
+      properties:
+        code:
+          type: string
+          description: Error code.
+          enum:
+          - VALIDATION_FAILURE
+        message:
+          type: string
+          description: Error message.
+        errors:
+          type: array
+          description: Field validation errors.
+          items:
+            $ref: '#/components/schemas/ValidationErrorDetail'
+      required:
+      - code
+      - message
+      - errors
+    Error400Response:
+      type: object
+      description: Error response for HTTP 400 Bad Request.
+      properties:
+        code:
+          type: string
+          description: Error code.
+          enum:
+          - BAD_REQUEST
+          - INVALID_PATH_VARIABLE
+          - MISSING_HTTP_HEADER
+          - INVALID_HTTP_HEADER
+          - MALFORMED_PATH_PARAM
+          - MISSING_QUERY_PARAM
+          - INVALID_QUERY_PARAM
+          - MALFORMED_QUERY_PARAM
+          - CONFIGURATION_ERROR
+        message:
+          type: string
+          description: Error message.
+      required:
+      - code
+      - message
+    ValidationErrorType:
+      $ref: ./error-common.yaml#/components/schemas/ValidationErrorType
+    AliasOrderDetails:
+      type: object
+      description: Alias order status and details.
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier of the alias order
+        accountId:
+          type: string
+          format: uuid
+          description: Unique identifier of the account the aliases are assigned to
+        status:
+          $ref: '#/components/schemas/AliasOrderStatusEnum'
+        requested:
+          type: integer
+          description: Total number of aliases requested
+        completed:
+          type: integer
+          description: Number of aliases successfully created so far
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp when the order was created
+        completedAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Timestamp when the order reached a terminal state
+        _links:
+          $ref: '#/components/schemas/AliasOrderLinks'
+    Identifications:
+      description: A list of one or more account identifiers.
+      type: array
+      items:
+        $ref: accounts-common.yaml#/components/schemas/AccountIdentifier
+      minItems: 1
+    Error409Response:
+      type: object
+      description: Error response for HTTP 409 Conflict.
+      properties:
+        code:
+          type: string
+          description: Error code.
+          enum:
+          - CONFLICT
+          - IDEMPOTENCY_CONFLICT
+          - RESOURCE_NOT_MODIFIABLE
+        message:
+          type: string
+          description: Error message.
+      required:
+      - code
+      - message
+    Error405Response:
+      type: object
+      description: HTTP method is not supported for this URL.
+      properties:
+        code:
+          type: string
+          description: Error code.
+          enum:
+          - METHOD_NOT_SUPPORTED
+        message:
+          type: string
+          description: Error message.
+      required:
+      - code
+      - message
+    Error404Response:
+      type: object
+      description: Error response for HTTP 404 Not Found.
+      properties:
+        code:
+          type: string
+          description: Error code.
+          enum:
+          - RESOURCE_NOT_FOUND
+        message:
+          type: string
+          description: Error message.
+      required:
+      - code
+      - message
+    LinkObject:
+      type: object
+      properties:
+        href:
+          type: string
+          format: uri
+        method:
+          type: string
+          enum:
+          - GET
+          - POST
+          - PATCH
+          - DELETE
+      required:
+      - href
+    CurrencyCode:
+      type: string
+      description: Three-letter ISO 4217 currency code.
+      example: EUR
+      pattern: ^[A-Z]{3}$
+    AliasCloseRequest:
+      type: object
+      properties:
+        communication:
+          $ref: '#/components/schemas/Communication'
+    ChangeAliasStateRequest:
+      type: object
+      properties:
+        active:
+          type: boolean
+      required:
+      - active
+    Error415Response:
+      type: object
+      description: Request contains data in an unsupported content type.
+      properties:
+        code:
+          type: string
+          description: Error code.
+          enum:
+          - UNSUPPORTED_MEDIA_TYPE
+        message:
+          type: string
+          description: Error message.
+      required:
+      - code
+      - message
+    ValidationErrorDetail:
+      type: object
+      description: Details about a specific validation error.
+      properties:
+        type:
+          $ref: '#/components/schemas/ValidationErrorType'
+        propertyPath:
+          type: string
+          description: Points to the specific field or property in the incoming request that violated the validation rule.
+        message:
+          type: string
+          description: Human-readable message about constraint violation.
+    AliasesOrderRequest:
+      type: object
+      properties:
+        accountId:
+          type: string
+          format: uuid
+          description: The unique identifier of the account.
+        count:
+          type: integer
+          minimum: 1
+          maximum: 1000
+          description: Number of aliases to create.
+        communication:
+          $ref: '#/components/schemas/Communication'
+      required:
+      - accountId
+      - count
+    Error406Response:
+      type: object
+      description: API is not able to generate a response in the format defined in the Accept HTTP request header.
+      properties:
+        code:
+          type: string
+          description: Error code.
+          enum:
+          - MEDIA_TYPE_NOT_ACCEPTABLE
+        message:
+          type: string
+          description: Error message.
+      required:
+      - code
+      - message
+  responses:
+    '403':
+      description: '**Access denied** - Although your credentials are correct, your access to this section of the API has been disabled or limited. Subsequent requests to this endpoint will not be processed.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error403Response'
+    '404':
+      description: '**Not found** - The resource that you are requesting cannot be found.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error404Response'
+    '401':
+      description: '**Unauthorized** - Your credentials were invalid. It may be that the token you''ve used has expired. Try re-authenticating with valid or updated credentials and retry this request.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error401Response'
+    '406':
+      description: '**Media-type not acceptable** - API is not able to generate a response in the format defined in the Accept HTTP request header.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error406Response'
+    '405':
+      description: '**Method not supported** - HTTP method is not supported for this URL.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error405Response'
+    '422':
+      description: '**Unprocessable** - Request''s payload validation fails.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error422Response'
+    '409':
+      description: '**Conflict** - Modification of a resource is not possible, because current state of it does not allow it. Or `Idempotency-Key` was already used.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error409Response'
+    '500':
+      description: '**Internal server error** - Something went wrong and request cannot be processed due to server error. Message will contain trace ID and timestamp, which allows to investigate what went wrong.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error500Response'
+    '400':
+      description: '**Bad request** - Request you sent is invalid or malformed. Response will contain a description of the actual problem.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error400Response'
+    '415':
+      description: '**Unsupported media-type** - Request contains data in an unsupported content type.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error415Response'
+  parameters:
+    PageParam:
+      name: page
+      in: query
+      description: Page index for pagination.
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    LimitParam:
+      name: limit
+      in: query
+      description: Number of items to return per page (max 100).
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 25
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      description: It helps preventing duplicates in your `POST` requests. It is recommend using a **UUID** for the key, however you may use any other unique identifier you choose.
+      required: true
+      schema:
+        type: string
+        maxLength: 160
+        example: 85136c79cbf9fe36bb9d05d0639c70c265c18d37
+    XVoltApiVersion:
+      name: X-Volt-Api-Version
+      in: header
+      description: Version of the API used. Currently, version `1` is the only version.
+      required: true
+      schema:
+        type: integer
+        example: 1
+        enum:
+        - 1
+  headers:
+    PaginationPageCount:
+      description: Total number of available pages.
+      schema:
+        type: integer
+        example: 6
+    PaginationLimit:
+      description: Number of items per page.
+      schema:
+        type: integer
+        example: 25
+    PaginationTotalItems:
+      description: The absolute count of items matching the query.
+      schema:
+        type: integer
+        example: 150
+    PaginationPage:
+      description: The current page number.
+      schema:
+        type: integer
+        example: 1
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
