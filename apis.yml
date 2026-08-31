@@ -158,6 +158,8 @@ apis:
   humanURL: https://docs.volt.io/api-reference/payments
   baseURL: https://gateway.volt.io
   tags:
+  - Account
+  tags_raw:
   - Accounts
   properties:
   - type: OpenAPI
@@ -231,6 +233,8 @@ apis:
   humanURL: https://docs.volt.io/api-reference/payments
   baseURL: https://gateway.volt.io
   tags:
+  - Transaction
+  tags_raw:
   - Transactions
   properties:
   - type: OpenAPI
