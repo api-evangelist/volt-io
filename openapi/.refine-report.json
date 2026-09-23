@@ -1,0 +1,32 @@
+{
+  "provider": "volt-io",
+  "sources": [
+    "_original/volt-io-accounts-openapi-original.yaml"
+  ],
+  "outputs": [
+    "volt-io-account-holder-verification-api-openapi.yml",
+    "volt-io-accounts-api-openapi.yml",
+    "volt-io-aliases-api-openapi.yml",
+    "volt-io-named-accounts-api-openapi.yml",
+    "volt-io-sandbox-api-openapi.yml",
+    "volt-io-transactions-api-openapi.yml",
+    "volt-io-trusted-accounts-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [
+    "sourced from openapi/_original/ (1 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "volt-io-accounts-openapi-original.yaml: upgraded openapi 3.0.1 -> OpenAPI 3.2.0",
+    "apis.yml register: already-registered"
+  ],
+  "skipped": [
+    "volt-io-account-holder-verification-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "volt-io-accounts-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "volt-io-aliases-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "volt-io-named-accounts-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "volt-io-sandbox-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "volt-io-transactions-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "volt-io-trusted-accounts-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
+}

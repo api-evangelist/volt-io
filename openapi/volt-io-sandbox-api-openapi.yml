@@ -2,7 +2,9 @@ openapi: 3.2.0
 info:
   title: Global Api Accounts Sandbox API
   version: 1.0.0
-  description: "## API idempotency \nEach `POST` request creating a resource (for example a transaction) requires to send a unique idempotency key. It is included in the `Idempotency-Key` HTTP header. Idempotency key helps prevent duplicates in your `POST` requests. We recommend using an **UUID** for the key, however you may use any other unique identifier you choose.\n\n#### Preventing duplicates \nIf we have already processed the request and you send a request using the same idempotency key, it will fail with an error, returning a ```409 Conflict``` response.\n\n## Case-sensitivity\nAll properties/keys within request's/response's payload are case-sensitive.\n\nHTTP headers' names are case-insensitive.\n\n## API base URL\n**Sandbox: [https://accounts.sandbox.volt.io]()**\n\n**Production: [https://accounts.volt.io]()**"
+  description: '## API idempotency
+
+    Each `POST` request creating a resource (for example a transaction) requires to send a unique idempotency key.'
   contact:
     email: support@volt.io
     name: Volt Support
@@ -76,9 +78,7 @@ paths:
   /transactions/{id}/reverse:
     post:
       summary: Trigger a reversal for an incoming transaction
-      description: 'Simulates a banking provider reversal notification for the specified incoming transaction. Only available in the sandbox environment.
-
-        '
+      description: Simulates a banking provider reversal notification for the specified incoming transaction. Only available in the sandbox environment.
       servers:
       - url: https://accounts.sandbox.volt.io
         description: Sandbox
@@ -108,16 +108,132 @@ paths:
         '500':
           $ref: '#/components/responses/500'
 components:
+  responses:
+    '403':
+      description: '**Access denied** - Although your credentials are correct, your access to this section of the API has been disabled or limited. Subsequent requests to this endpoint will not be processed.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error403Response'
+    '409':
+      description: '**Conflict** - Modification of a resource is not possible, because current state of it does not allow it. Or `Idempotency-Key` was already used.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error409Response'
+    '500':
+      description: '**Internal server error** - Something went wrong and request cannot be processed due to server error. Message will contain trace ID and timestamp, which allows to investigate what went wrong.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error500Response'
+    '415':
+      description: '**Unsupported media-type** - Request contains data in an unsupported content type.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error415Response'
+    '406':
+      description: '**Media-type not acceptable** - API is not able to generate a response in the format defined in the Accept HTTP request header.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error406Response'
+    '401':
+      description: '**Unauthorized** - Your credentials were invalid. It may be that the token you''ve used has expired. Try re-authenticating with valid or updated credentials and retry this request.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error401Response'
+    '404':
+      description: '**Not found** - The resource that you are requesting cannot be found.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error404Response'
+    '400':
+      description: '**Bad request** - Request you sent is invalid or malformed. Response will contain a description of the actual problem.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error400Response'
+    '422':
+      description: '**Unprocessable** - Request''s payload validation fails.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error422Response'
+    '405':
+      description: '**Method not supported** - HTTP method is not supported for this URL.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error405Response'
   schemas:
-    Error401Response:
+    ValidationErrorDetail:
       type: object
-      description: Error response for HTTP 401 Unauthorized.
+      description: Details about a specific validation error.
+      properties:
+        type:
+          $ref: '#/components/schemas/ValidationErrorType'
+        propertyPath:
+          type: string
+          description: Points to the specific field or property in the incoming request that violated the validation rule.
+        message:
+          type: string
+          description: Human-readable message about constraint violation.
+    Error404Response:
+      type: object
+      description: Error response for HTTP 404 Not Found.
       properties:
         code:
           type: string
           description: Error code.
           enum:
-          - UNAUTHORISED
+          - RESOURCE_NOT_FOUND
+        message:
+          type: string
+          description: Error message.
+      required:
+      - code
+      - message
+    SimulatedBeneficiary:
+      type: object
+      required:
+      - accountIdentifiers
+      properties:
+        accountIdentifiers:
+          $ref: accounts-common.yaml#/components/schemas/AccountIdentifier
+    Error500Response:
+      type: object
+      description: Error response for HTTP 500 Internal Server Error.
+      properties:
+        code:
+          type: string
+          description: Error code.
+          enum:
+          - INTERNAL_SERVER_ERROR
+        message:
+          type: string
+          description: Error message.
+      required:
+      - code
+      - message
+    PaymentReference:
+      type: string
+      pattern: ^(?=.*\S)[a-zA-Z0-9\/\-?:().,'+ ]*$
+      minLength: 1
+      maxLength: 35
+      description: 'The reconciliation reference that appears on the bank statement. This is crucial for matching the transaction with external banking records. Maximum length: 35 (EU) or 18 (UK).'
+    Error415Response:
+      type: object
+      description: Request contains data in an unsupported content type.
+      properties:
+        code:
+          type: string
+          description: Error code.
+          enum:
+          - UNSUPPORTED_MEDIA_TYPE
         message:
           type: string
           description: Error message.
@@ -139,13 +255,36 @@ components:
       required:
       - code
       - message
-    SimulatedBeneficiary:
+    Error405Response:
       type: object
-      required:
-      - accountIdentifiers
+      description: HTTP method is not supported for this URL.
       properties:
-        accountIdentifiers:
-          $ref: accounts-common.yaml#/components/schemas/AccountIdentifier
+        code:
+          type: string
+          description: Error code.
+          enum:
+          - METHOD_NOT_SUPPORTED
+        message:
+          type: string
+          description: Error message.
+      required:
+      - code
+      - message
+    Error406Response:
+      type: object
+      description: API is not able to generate a response in the format defined in the Accept HTTP request header.
+      properties:
+        code:
+          type: string
+          description: Error code.
+          enum:
+          - MEDIA_TYPE_NOT_ACCEPTABLE
+        message:
+          type: string
+          description: Error message.
+      required:
+      - code
+      - message
     SimulatedSender:
       type: object
       required:
@@ -155,21 +294,89 @@ components:
           type: string
         accountIdentifiers:
           $ref: accounts-common.yaml#/components/schemas/AccountIdentifier
-    Error500Response:
+    Error401Response:
       type: object
-      description: Error response for HTTP 500 Internal Server Error.
+      description: Error response for HTTP 401 Unauthorized.
       properties:
         code:
           type: string
           description: Error code.
           enum:
-          - INTERNAL_SERVER_ERROR
+          - UNAUTHORISED
         message:
           type: string
           description: Error message.
       required:
       - code
       - message
+    Error400Response:
+      type: object
+      description: Error response for HTTP 400 Bad Request.
+      properties:
+        code:
+          type: string
+          description: Error code.
+          enum:
+          - BAD_REQUEST
+          - INVALID_PATH_VARIABLE
+          - MISSING_HTTP_HEADER
+          - INVALID_HTTP_HEADER
+          - MALFORMED_PATH_PARAM
+          - MISSING_QUERY_PARAM
+          - INVALID_QUERY_PARAM
+          - MALFORMED_QUERY_PARAM
+          - CONFIGURATION_ERROR
+        message:
+          type: string
+          description: Error message.
+      required:
+      - code
+      - message
+    CurrencyCode:
+      type: string
+      description: Three-letter ISO 4217 currency code.
+      example: EUR
+      pattern: ^[A-Z]{3}$
+    Error422Response:
+      type: object
+      description: Error response for HTTP 422 Unprocessable Entity.
+      properties:
+        code:
+          type: string
+          description: Error code.
+          enum:
+          - VALIDATION_FAILURE
+        message:
+          type: string
+          description: Error message.
+        errors:
+          type: array
+          description: Field validation errors.
+          items:
+            $ref: '#/components/schemas/ValidationErrorDetail'
+      required:
+      - code
+      - message
+      - errors
+    Error409Response:
+      type: object
+      description: Error response for HTTP 409 Conflict.
+      properties:
+        code:
+          type: string
+          description: Error code.
+          enum:
+          - CONFLICT
+          - IDEMPOTENCY_CONFLICT
+          - RESOURCE_NOT_MODIFIABLE
+        message:
+          type: string
+          description: Error message.
+      required:
+      - code
+      - message
+    ValidationErrorType:
+      $ref: ./error-common.yaml#/components/schemas/ValidationErrorType
     SimulatedIncomingTransaction:
       type: object
       description: The main object representing a processed incoming payment event.
@@ -200,213 +407,6 @@ components:
               $ref: accounts-common.yaml#/components/schemas/Amount
             currency:
               $ref: '#/components/schemas/CurrencyCode'
-    Error422Response:
-      type: object
-      description: Error response for HTTP 422 Unprocessable Entity.
-      properties:
-        code:
-          type: string
-          description: Error code.
-          enum:
-          - VALIDATION_FAILURE
-        message:
-          type: string
-          description: Error message.
-        errors:
-          type: array
-          description: Field validation errors.
-          items:
-            $ref: '#/components/schemas/ValidationErrorDetail'
-      required:
-      - code
-      - message
-      - errors
-    Error400Response:
-      type: object
-      description: Error response for HTTP 400 Bad Request.
-      properties:
-        code:
-          type: string
-          description: Error code.
-          enum:
-          - BAD_REQUEST
-          - INVALID_PATH_VARIABLE
-          - MISSING_HTTP_HEADER
-          - INVALID_HTTP_HEADER
-          - MALFORMED_PATH_PARAM
-          - MISSING_QUERY_PARAM
-          - INVALID_QUERY_PARAM
-          - MALFORMED_QUERY_PARAM
-          - CONFIGURATION_ERROR
-        message:
-          type: string
-          description: Error message.
-      required:
-      - code
-      - message
-    ValidationErrorType:
-      $ref: ./error-common.yaml#/components/schemas/ValidationErrorType
-    Error409Response:
-      type: object
-      description: Error response for HTTP 409 Conflict.
-      properties:
-        code:
-          type: string
-          description: Error code.
-          enum:
-          - CONFLICT
-          - IDEMPOTENCY_CONFLICT
-          - RESOURCE_NOT_MODIFIABLE
-        message:
-          type: string
-          description: Error message.
-      required:
-      - code
-      - message
-    Error405Response:
-      type: object
-      description: HTTP method is not supported for this URL.
-      properties:
-        code:
-          type: string
-          description: Error code.
-          enum:
-          - METHOD_NOT_SUPPORTED
-        message:
-          type: string
-          description: Error message.
-      required:
-      - code
-      - message
-    Error404Response:
-      type: object
-      description: Error response for HTTP 404 Not Found.
-      properties:
-        code:
-          type: string
-          description: Error code.
-          enum:
-          - RESOURCE_NOT_FOUND
-        message:
-          type: string
-          description: Error message.
-      required:
-      - code
-      - message
-    CurrencyCode:
-      type: string
-      description: Three-letter ISO 4217 currency code.
-      example: EUR
-      pattern: ^[A-Z]{3}$
-    PaymentReference:
-      type: string
-      pattern: ^(?=.*\S)[a-zA-Z0-9\/\-?:().,'+ ]*$
-      minLength: 1
-      maxLength: 35
-      description: 'The reconciliation reference that appears on the bank statement. This is crucial for matching the transaction with external banking records. Maximum length: 35 (EU) or 18 (UK).'
-    Error415Response:
-      type: object
-      description: Request contains data in an unsupported content type.
-      properties:
-        code:
-          type: string
-          description: Error code.
-          enum:
-          - UNSUPPORTED_MEDIA_TYPE
-        message:
-          type: string
-          description: Error message.
-      required:
-      - code
-      - message
-    ValidationErrorDetail:
-      type: object
-      description: Details about a specific validation error.
-      properties:
-        type:
-          $ref: '#/components/schemas/ValidationErrorType'
-        propertyPath:
-          type: string
-          description: Points to the specific field or property in the incoming request that violated the validation rule.
-        message:
-          type: string
-          description: Human-readable message about constraint violation.
-    Error406Response:
-      type: object
-      description: API is not able to generate a response in the format defined in the Accept HTTP request header.
-      properties:
-        code:
-          type: string
-          description: Error code.
-          enum:
-          - MEDIA_TYPE_NOT_ACCEPTABLE
-        message:
-          type: string
-          description: Error message.
-      required:
-      - code
-      - message
-  responses:
-    '403':
-      description: '**Access denied** - Although your credentials are correct, your access to this section of the API has been disabled or limited. Subsequent requests to this endpoint will not be processed.'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error403Response'
-    '404':
-      description: '**Not found** - The resource that you are requesting cannot be found.'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error404Response'
-    '401':
-      description: '**Unauthorized** - Your credentials were invalid. It may be that the token you''ve used has expired. Try re-authenticating with valid or updated credentials and retry this request.'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error401Response'
-    '406':
-      description: '**Media-type not acceptable** - API is not able to generate a response in the format defined in the Accept HTTP request header.'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error406Response'
-    '405':
-      description: '**Method not supported** - HTTP method is not supported for this URL.'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error405Response'
-    '422':
-      description: '**Unprocessable** - Request''s payload validation fails.'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error422Response'
-    '409':
-      description: '**Conflict** - Modification of a resource is not possible, because current state of it does not allow it. Or `Idempotency-Key` was already used.'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error409Response'
-    '500':
-      description: '**Internal server error** - Something went wrong and request cannot be processed due to server error. Message will contain trace ID and timestamp, which allows to investigate what went wrong.'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error500Response'
-    '400':
-      description: '**Bad request** - Request you sent is invalid or malformed. Response will contain a description of the actual problem.'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error400Response'
-    '415':
-      description: '**Unsupported media-type** - Request contains data in an unsupported content type.'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error415Response'
   parameters:
     XVoltApiVersion:
       name: X-Volt-Api-Version

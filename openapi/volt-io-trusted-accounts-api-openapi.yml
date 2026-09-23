@@ -2,7 +2,9 @@ openapi: 3.2.0
 info:
   title: Global Api Accounts Trusted accounts API
   version: 1.0.0
-  description: "## API idempotency \nEach `POST` request creating a resource (for example a transaction) requires to send a unique idempotency key. It is included in the `Idempotency-Key` HTTP header. Idempotency key helps prevent duplicates in your `POST` requests. We recommend using an **UUID** for the key, however you may use any other unique identifier you choose.\n\n#### Preventing duplicates \nIf we have already processed the request and you send a request using the same idempotency key, it will fail with an error, returning a ```409 Conflict``` response.\n\n## Case-sensitivity\nAll properties/keys within request's/response's payload are case-sensitive.\n\nHTTP headers' names are case-insensitive.\n\n## API base URL\n**Sandbox: [https://accounts.sandbox.volt.io]()**\n\n**Production: [https://accounts.volt.io]()**"
+  description: '## API idempotency
+
+    Each `POST` request creating a resource (for example a transaction) requires to send a unique idempotency key.'
   contact:
     email: support@volt.io
     name: Volt Support
@@ -81,31 +83,68 @@ paths:
         '500':
           $ref: '#/components/responses/500'
 components:
+  responses:
+    '403':
+      description: '**Access denied** - Although your credentials are correct, your access to this section of the API has been disabled or limited. Subsequent requests to this endpoint will not be processed.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error403Response'
+    '500':
+      description: '**Internal server error** - Something went wrong and request cannot be processed due to server error. Message will contain trace ID and timestamp, which allows to investigate what went wrong.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error500Response'
+    '401':
+      description: '**Unauthorized** - Your credentials were invalid. It may be that the token you''ve used has expired. Try re-authenticating with valid or updated credentials and retry this request.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error401Response'
+    '404':
+      description: '**Not found** - The resource that you are requesting cannot be found.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error404Response'
+    '400':
+      description: '**Bad request** - Request you sent is invalid or malformed. Response will contain a description of the actual problem.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error400Response'
   schemas:
-    Error401Response:
+    TrustedAccountCustomerGroup:
+      type: string
+      enum:
+      - CUSTOMERS
+      - CUSTOMER_INDIVIDUAL_CLIENTS
+      description: '* `CUSTOMERS` - List direct trusted accounts of customers in the hierarchy
+
+        * `CUSTOMER_INDIVIDUAL_CLIENTS` - List trusted accounts of merchant individual clients only
+
+        '
+    AccountHolderEntityId:
+      type: string
+      format: uuid
+      description: 'The unique identifier of the account holder entity depends on the entity type:
+
+        * Volt Business Customer: customer identifier
+
+        * Merchant Clients (Business/Individual): unique identifier issued during the client onboarding process
+
+        '
+      example: 40bb9716-fb00-484e-b4a2-eb3a220b3906
+    Error404Response:
       type: object
-      description: Error response for HTTP 401 Unauthorized.
+      description: Error response for HTTP 404 Not Found.
       properties:
         code:
           type: string
           description: Error code.
           enum:
-          - UNAUTHORISED
-        message:
-          type: string
-          description: Error message.
-      required:
-      - code
-      - message
-    Error403Response:
-      type: object
-      description: Error response for HTTP 403 Forbidden.
-      properties:
-        code:
-          type: string
-          description: Error code.
-          enum:
-          - ACCESS_DENIED
+          - RESOURCE_NOT_FOUND
         message:
           type: string
           description: Error message.
@@ -127,6 +166,72 @@ components:
       required:
       - code
       - message
+    Address:
+      type: object
+      description: Physical address of the beneficiary or sender.
+      properties:
+        addressLine1:
+          type: string
+          description: Primary address line, typically containing the street name and building number.
+        addressLine2:
+          type: string
+          description: Additional address details such as suite, apartment number, or floor level.
+        city:
+          type: string
+          description: The city or locality of the beneficiary's registered address.
+        postalCode:
+          description: The ZIP or Postal code
+          type: string
+        country:
+          $ref: '#/components/schemas/CountryCode'
+    Identifications:
+      description: A list of one or more account identifiers.
+      type: array
+      items:
+        $ref: accounts-common.yaml#/components/schemas/AccountIdentifier
+      minItems: 1
+    Error403Response:
+      type: object
+      description: Error response for HTTP 403 Forbidden.
+      properties:
+        code:
+          type: string
+          description: Error code.
+          enum:
+          - ACCESS_DENIED
+        message:
+          type: string
+          description: Error message.
+      required:
+      - code
+      - message
+    CountryCode:
+      description: Alpha-2 country code
+      example: DE
+      pattern: ^[A-Z]{2}$
+      type: string
+    AccountHolder:
+      type: object
+      required:
+      - entityId
+      - legalName
+      - address
+      - beneficiaries
+      properties:
+        entityId:
+          $ref: '#/components/schemas/AccountHolderEntityId'
+        legalName:
+          type: string
+          description: Full name or legal entity name of the account holder as registered with the bank.
+        address:
+          $ref: '#/components/schemas/Address'
+        ultimateBeneficialOwners:
+          type: array
+          description: List of ultimate beneficial owners of the account.
+          uniqueItems: true
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/UltimateBeneficialOwner'
     TrustedAccountMinimalDetails:
       type: object
       properties:
@@ -155,6 +260,21 @@ components:
         active:
           type: boolean
           description: Boolean flag indicating if the trusted account is currently enabled for processing transactions.
+    Error401Response:
+      type: object
+      description: Error response for HTTP 401 Unauthorized.
+      properties:
+        code:
+          type: string
+          description: Error code.
+          enum:
+          - UNAUTHORISED
+        message:
+          type: string
+          description: Error message.
+      required:
+      - code
+      - message
     Error400Response:
       type: object
       description: Error response for HTTP 400 Bad Request.
@@ -178,12 +298,11 @@ components:
       required:
       - code
       - message
-    Identifications:
-      description: A list of one or more account identifiers.
-      type: array
-      items:
-        $ref: accounts-common.yaml#/components/schemas/AccountIdentifier
-      minItems: 1
+    CurrencyCode:
+      type: string
+      description: Three-letter ISO 4217 currency code.
+      example: EUR
+      pattern: ^[A-Z]{3}$
     UltimateBeneficialOwner:
       type: object
       required:
@@ -196,132 +315,28 @@ components:
         lastName:
           type: string
           description: Last name of ultimate beneficial owner.
-    AccountHolderEntityId:
-      type: string
-      format: uuid
-      description: 'The unique identifier of the account holder entity depends on the entity type:
-
-        * Volt Business Customer: customer identifier
-
-        * Merchant Clients (Business/Individual): unique identifier issued during the client onboarding process
-
-        '
-      example: 40bb9716-fb00-484e-b4a2-eb3a220b3906
-    Error404Response:
-      type: object
-      description: Error response for HTTP 404 Not Found.
-      properties:
-        code:
-          type: string
-          description: Error code.
-          enum:
-          - RESOURCE_NOT_FOUND
-        message:
-          type: string
-          description: Error message.
-      required:
-      - code
-      - message
-    CurrencyCode:
-      type: string
-      description: Three-letter ISO 4217 currency code.
-      example: EUR
-      pattern: ^[A-Z]{3}$
-    AccountHolder:
-      type: object
-      required:
-      - entityId
-      - legalName
-      - address
-      - beneficiaries
-      properties:
-        entityId:
-          $ref: '#/components/schemas/AccountHolderEntityId'
-        legalName:
-          type: string
-          description: Full name or legal entity name of the account holder as registered with the bank.
-        address:
-          $ref: '#/components/schemas/Address'
-        ultimateBeneficialOwners:
-          type: array
-          description: List of ultimate beneficial owners of the account.
-          uniqueItems: true
-          minItems: 1
-          items:
-            $ref: '#/components/schemas/UltimateBeneficialOwner'
-    CountryCode:
-      description: Alpha-2 country code
-      example: DE
-      pattern: ^[A-Z]{2}$
-      type: string
-    Address:
-      type: object
-      description: Physical address of the beneficiary or sender.
-      properties:
-        addressLine1:
-          type: string
-          description: Primary address line, typically containing the street name and building number.
-        addressLine2:
-          type: string
-          description: Additional address details such as suite, apartment number, or floor level.
-        city:
-          type: string
-          description: The city or locality of the beneficiary's registered address.
-        postalCode:
-          description: The ZIP or Postal code
-          type: string
-        country:
-          $ref: '#/components/schemas/CountryCode'
-    TrustedAccountCustomerGroup:
-      type: string
-      enum:
-      - CUSTOMERS
-      - CUSTOMER_INDIVIDUAL_CLIENTS
-      description: '* `CUSTOMERS` - List direct trusted accounts of customers in the hierarchy
-
-        * `CUSTOMER_INDIVIDUAL_CLIENTS` - List trusted accounts of merchant individual clients only
-
-        '
-  responses:
-    '403':
-      description: '**Access denied** - Although your credentials are correct, your access to this section of the API has been disabled or limited. Subsequent requests to this endpoint will not be processed.'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error403Response'
-    '404':
-      description: '**Not found** - The resource that you are requesting cannot be found.'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error404Response'
-    '401':
-      description: '**Unauthorized** - Your credentials were invalid. It may be that the token you''ve used has expired. Try re-authenticating with valid or updated credentials and retry this request.'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error401Response'
-    '500':
-      description: '**Internal server error** - Something went wrong and request cannot be processed due to server error. Message will contain trace ID and timestamp, which allows to investigate what went wrong.'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error500Response'
-    '400':
-      description: '**Bad request** - Request you sent is invalid or malformed. Response will contain a description of the actual problem.'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error400Response'
-  parameters:
-    PageParam:
-      name: page
-      in: query
-      description: Page index for pagination.
+  headers:
+    PaginationPage:
+      description: The current page number.
       schema:
         type: integer
-        minimum: 1
-        default: 1
+        example: 1
+    PaginationTotalItems:
+      description: The absolute count of items matching the query.
+      schema:
+        type: integer
+        example: 150
+    PaginationLimit:
+      description: Number of items per page.
+      schema:
+        type: integer
+        example: 25
+    PaginationPageCount:
+      description: Total number of available pages.
+      schema:
+        type: integer
+        example: 6
+  parameters:
     LimitParam:
       name: limit
       in: query
@@ -342,27 +357,14 @@ components:
         example: 1
         enum:
         - 1
-  headers:
-    PaginationPageCount:
-      description: Total number of available pages.
+    PageParam:
+      name: page
+      in: query
+      description: Page index for pagination.
       schema:
         type: integer
-        example: 6
-    PaginationLimit:
-      description: Number of items per page.
-      schema:
-        type: integer
-        example: 25
-    PaginationTotalItems:
-      description: The absolute count of items matching the query.
-      schema:
-        type: integer
-        example: 150
-    PaginationPage:
-      description: The current page number.
-      schema:
-        type: integer
-        example: 1
+        minimum: 1
+        default: 1
   securitySchemes:
     BearerAuth:
       type: http
