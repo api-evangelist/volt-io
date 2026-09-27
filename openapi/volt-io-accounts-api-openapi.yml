@@ -261,96 +261,63 @@ paths:
         '500':
           $ref: '#/components/responses/500'
 components:
-  responses:
-    '403':
-      description: '**Access denied** - Although your credentials are correct, your access to this section of the API has been disabled or limited. Subsequent requests to this endpoint will not be processed.'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error403Response'
-    '409':
-      description: '**Conflict** - Modification of a resource is not possible, because current state of it does not allow it. Or `Idempotency-Key` was already used.'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error409Response'
-    '500':
-      description: '**Internal server error** - Something went wrong and request cannot be processed due to server error. Message will contain trace ID and timestamp, which allows to investigate what went wrong.'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error500Response'
-    '415':
-      description: '**Unsupported media-type** - Request contains data in an unsupported content type.'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error415Response'
-    '406':
-      description: '**Media-type not acceptable** - API is not able to generate a response in the format defined in the Accept HTTP request header.'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error406Response'
-    '401':
-      description: '**Unauthorized** - Your credentials were invalid. It may be that the token you''ve used has expired. Try re-authenticating with valid or updated credentials and retry this request.'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error401Response'
-    '404':
-      description: '**Not found** - The resource that you are requesting cannot be found.'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error404Response'
-    '400':
-      description: '**Bad request** - Request you sent is invalid or malformed. Response will contain a description of the actual problem.'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error400Response'
-    '422':
-      description: '**Unprocessable** - Request''s payload validation fails.'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error422Response'
-    '405':
-      description: '**Method not supported** - HTTP method is not supported for this URL.'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error405Response'
   schemas:
-    ValidationErrorDetail:
+    Error406Response:
       type: object
-      description: Details about a specific validation error.
+      description: API is not able to generate a response in the format defined in the Accept HTTP request header.
       properties:
-        type:
-          $ref: '#/components/schemas/ValidationErrorType'
-        propertyPath:
+        code:
           type: string
-          description: Points to the specific field or property in the incoming request that violated the validation rule.
+          description: Error code.
+          enum:
+          - MEDIA_TYPE_NOT_ACCEPTABLE
         message:
           type: string
-          description: Human-readable message about constraint violation.
-    AccountHolderEntityId:
+          description: Error message.
+      required:
+      - code
+      - message
+    CurrencyCode:
       type: string
-      format: uuid
-      description: 'The unique identifier of the account holder entity depends on the entity type:
-
-        * Volt Business Customer: customer identifier
-
-        * Merchant Clients (Business/Individual): unique identifier issued during the client onboarding process
-
-        '
-      example: 40bb9716-fb00-484e-b4a2-eb3a220b3906
-    AccountSubType:
+      description: Three-letter ISO 4217 currency code.
+      example: EUR
+      pattern: ^[A-Z]{3}$
+    LinkObject:
+      type: object
+      properties:
+        href:
+          type: string
+          format: uri
+        method:
+          type: string
+          enum:
+          - GET
+          - POST
+          - PATCH
+          - DELETE
+      required:
+      - href
+    SortOrder:
+      description: Sorting direction
       type: string
       enum:
-      - BUSINESS
-      - INDIVIDUAL
+      - asc
+      - desc
+    Error403Response:
+      type: object
+      description: Error response for HTTP 403 Forbidden.
+      properties:
+        code:
+          type: string
+          description: Error code.
+          enum:
+          - ACCESS_DENIED
+        message:
+          type: string
+          description: Error message.
+      required:
+      - code
+      - message
     Error404Response:
       type: object
       description: Error response for HTTP 404 Not Found.
@@ -376,127 +343,6 @@ components:
         timestamp:
           type: string
           format: date-time
-    Error500Response:
-      type: object
-      description: Error response for HTTP 500 Internal Server Error.
-      properties:
-        code:
-          type: string
-          description: Error code.
-          enum:
-          - INTERNAL_SERVER_ERROR
-        message:
-          type: string
-          description: Error message.
-      required:
-      - code
-      - message
-    Identifications:
-      description: A list of one or more account identifiers.
-      type: array
-      items:
-        $ref: accounts-common.yaml#/components/schemas/AccountIdentifier
-      minItems: 1
-    AccountType:
-      type: string
-      enum:
-      - VOLT_ACCOUNT
-      - NAMED_ACCOUNT
-      - CONNECTED_ACCOUNT
-    LinkObject:
-      type: object
-      properties:
-        href:
-          type: string
-          format: uri
-        method:
-          type: string
-          enum:
-          - GET
-          - POST
-          - PATCH
-          - DELETE
-      required:
-      - href
-    Error415Response:
-      type: object
-      description: Request contains data in an unsupported content type.
-      properties:
-        code:
-          type: string
-          description: Error code.
-          enum:
-          - UNSUPPORTED_MEDIA_TYPE
-        message:
-          type: string
-          description: Error message.
-      required:
-      - code
-      - message
-    Error403Response:
-      type: object
-      description: Error response for HTTP 403 Forbidden.
-      properties:
-        code:
-          type: string
-          description: Error code.
-          enum:
-          - ACCESS_DENIED
-        message:
-          type: string
-          description: Error message.
-      required:
-      - code
-      - message
-    CountryCode:
-      description: Alpha-2 country code
-      example: DE
-      pattern: ^[A-Z]{2}$
-      type: string
-    Error405Response:
-      type: object
-      description: HTTP method is not supported for this URL.
-      properties:
-        code:
-          type: string
-          description: Error code.
-          enum:
-          - METHOD_NOT_SUPPORTED
-        message:
-          type: string
-          description: Error message.
-      required:
-      - code
-      - message
-    Error406Response:
-      type: object
-      description: API is not able to generate a response in the format defined in the Accept HTTP request header.
-      properties:
-        code:
-          type: string
-          description: Error code.
-          enum:
-          - MEDIA_TYPE_NOT_ACCEPTABLE
-        message:
-          type: string
-          description: Error message.
-      required:
-      - code
-      - message
-    AccountBeneficiaryMinimalDetails:
-      type: object
-      properties:
-        name:
-          type: string
-          description: Name of the beneficiary
-          example: John Doe
-        accountIdentifiers:
-          $ref: accounts-common.yaml#/components/schemas/AccountIdentifier
-    AccountCloseRequest:
-      type: object
-      properties:
-        communication:
-          $ref: '#/components/schemas/Communication'
     Error401Response:
       type: object
       description: Error response for HTTP 401 Unauthorized.
@@ -512,6 +358,54 @@ components:
       required:
       - code
       - message
+    Error422Response:
+      type: object
+      description: Error response for HTTP 422 Unprocessable Entity.
+      properties:
+        code:
+          type: string
+          description: Error code.
+          enum:
+          - VALIDATION_FAILURE
+        message:
+          type: string
+          description: Error message.
+        errors:
+          type: array
+          description: Field validation errors.
+          items:
+            $ref: '#/components/schemas/ValidationErrorDetail'
+      required:
+      - code
+      - message
+      - errors
+    Error500Response:
+      type: object
+      description: Error response for HTTP 500 Internal Server Error.
+      properties:
+        code:
+          type: string
+          description: Error code.
+          enum:
+          - INTERNAL_SERVER_ERROR
+        message:
+          type: string
+          description: Error message.
+      required:
+      - code
+      - message
+    AccountStatusEnum:
+      type: string
+      description: The current status of the account.
+      enum:
+      - ACTIVE
+      - SUSPENDED
+      - CLOSED
+    AccountCloseRequest:
+      type: object
+      properties:
+        communication:
+          $ref: '#/components/schemas/Communication'
     Error400Response:
       type: object
       description: Error response for HTTP 400 Bad Request.
@@ -535,67 +429,6 @@ components:
       required:
       - code
       - message
-    AccountStatusEnum:
-      type: string
-      description: The current status of the account.
-      enum:
-      - ACTIVE
-      - SUSPENDED
-      - CLOSED
-    CurrencyCode:
-      type: string
-      description: Three-letter ISO 4217 currency code.
-      example: EUR
-      pattern: ^[A-Z]{3}$
-    Error422Response:
-      type: object
-      description: Error response for HTTP 422 Unprocessable Entity.
-      properties:
-        code:
-          type: string
-          description: Error code.
-          enum:
-          - VALIDATION_FAILURE
-        message:
-          type: string
-          description: Error message.
-        errors:
-          type: array
-          description: Field validation errors.
-          items:
-            $ref: '#/components/schemas/ValidationErrorDetail'
-      required:
-      - code
-      - message
-      - errors
-    AccountDetails:
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/AccountMinimalDetails'
-      - type: object
-        properties:
-          _links:
-            type: object
-            properties:
-              self:
-                $ref: '#/components/schemas/LinkObject'
-    SortOrder:
-      description: Sorting direction
-      type: string
-      enum:
-      - asc
-      - desc
-    AccountHolderMinimalDetails:
-      type: object
-      required:
-      - entityId
-      - legalName
-      properties:
-        entityId:
-          $ref: '#/components/schemas/AccountHolderEntityId'
-        legalName:
-          type: string
-          description: Full name or legal entity name of the account holder as registered with the bank.
     AccountMinimalDetails:
       type: object
       properties:
@@ -625,6 +458,58 @@ components:
           $ref: '#/components/schemas/AccountSubType'
         accountHolder:
           $ref: '#/components/schemas/AccountHolderMinimalDetails'
+    AccountDetails:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/AccountMinimalDetails'
+      - type: object
+        properties:
+          _links:
+            type: object
+            properties:
+              self:
+                $ref: '#/components/schemas/LinkObject'
+    Error415Response:
+      type: object
+      description: Request contains data in an unsupported content type.
+      properties:
+        code:
+          type: string
+          description: Error code.
+          enum:
+          - UNSUPPORTED_MEDIA_TYPE
+        message:
+          type: string
+          description: Error message.
+      required:
+      - code
+      - message
+    AccountHolderEntityId:
+      type: string
+      format: uuid
+      description: 'The unique identifier of the account holder entity depends on the entity type:
+
+        * Volt Business Customer: customer identifier
+
+        * Merchant Clients (Business/Individual): unique identifier issued during the client onboarding process
+
+        '
+      example: 40bb9716-fb00-484e-b4a2-eb3a220b3906
+    AccountType:
+      type: string
+      enum:
+      - VOLT_ACCOUNT
+      - NAMED_ACCOUNT
+      - CONNECTED_ACCOUNT
+    AccountBeneficiaryMinimalDetails:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the beneficiary
+          example: John Doe
+        accountIdentifiers:
+          $ref: accounts-common.yaml#/components/schemas/AccountIdentifier
     Error409Response:
       type: object
       description: Error response for HTTP 409 Conflict.
@@ -642,8 +527,30 @@ components:
       required:
       - code
       - message
+    AccountHolderMinimalDetails:
+      type: object
+      required:
+      - entityId
+      - legalName
+      properties:
+        entityId:
+          $ref: '#/components/schemas/AccountHolderEntityId'
+        legalName:
+          type: string
+          description: Full name or legal entity name of the account holder as registered with the bank.
+    Identifications:
+      description: A list of one or more account identifiers.
+      type: array
+      items:
+        $ref: accounts-common.yaml#/components/schemas/AccountIdentifier
+      minItems: 1
     ValidationErrorType:
       $ref: ./error-common.yaml#/components/schemas/ValidationErrorType
+    AccountSubType:
+      type: string
+      enum:
+      - BUSINESS
+      - INDIVIDUAL
     Communication:
       type: object
       properties:
@@ -656,38 +563,130 @@ components:
               pattern: ^https?://[^ ]+$
               description: URL where the notifications (webhooks) are going to be sent when the transaction status changes. This value will take precedence over Fuzebox configuration. Provide a value here only if you need to overwrite it. Note that a default notifications URL must be configured in Fuzebox for notifications to be delivered; if it is not configured, no notification will be sent even when this overwrite URL is provided.
               example: https://mywebsite.com/webhooks
+    CountryCode:
+      description: Alpha-2 country code
+      example: DE
+      pattern: ^[A-Z]{2}$
+      type: string
+    ValidationErrorDetail:
+      type: object
+      description: Details about a specific validation error.
+      properties:
+        type:
+          $ref: '#/components/schemas/ValidationErrorType'
+        propertyPath:
+          type: string
+          description: Points to the specific field or property in the incoming request that violated the validation rule.
+        message:
+          type: string
+          description: Human-readable message about constraint violation.
+    Error405Response:
+      type: object
+      description: HTTP method is not supported for this URL.
+      properties:
+        code:
+          type: string
+          description: Error code.
+          enum:
+          - METHOD_NOT_SUPPORTED
+        message:
+          type: string
+          description: Error message.
+      required:
+      - code
+      - message
   headers:
-    PaginationPage:
-      description: The current page number.
-      schema:
-        type: integer
-        example: 1
-    PaginationTotalItems:
-      description: The absolute count of items matching the query.
-      schema:
-        type: integer
-        example: 150
     PaginationLimit:
       description: Number of items per page.
       schema:
         type: integer
         example: 25
+    PaginationTotalItems:
+      description: The absolute count of items matching the query.
+      schema:
+        type: integer
+        example: 150
     PaginationPageCount:
       description: Total number of available pages.
       schema:
         type: integer
         example: 6
-  parameters:
-    LimitParam:
-      name: limit
-      in: query
-      description: Number of items to return per page (max 100).
-      required: false
+    PaginationPage:
+      description: The current page number.
       schema:
         type: integer
-        minimum: 1
-        maximum: 100
-        default: 25
+        example: 1
+  responses:
+    '400':
+      description: '**Bad request** - Request you sent is invalid or malformed. Response will contain a description of the actual problem.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error400Response'
+    '405':
+      description: '**Method not supported** - HTTP method is not supported for this URL.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error405Response'
+    '409':
+      description: '**Conflict** - Modification of a resource is not possible, because current state of it does not allow it. Or `Idempotency-Key` was already used.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error409Response'
+    '415':
+      description: '**Unsupported media-type** - Request contains data in an unsupported content type.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error415Response'
+    '403':
+      description: '**Access denied** - Although your credentials are correct, your access to this section of the API has been disabled or limited. Subsequent requests to this endpoint will not be processed.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error403Response'
+    '500':
+      description: '**Internal server error** - Something went wrong and request cannot be processed due to server error. Message will contain trace ID and timestamp, which allows to investigate what went wrong.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error500Response'
+    '406':
+      description: '**Media-type not acceptable** - API is not able to generate a response in the format defined in the Accept HTTP request header.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error406Response'
+    '422':
+      description: '**Unprocessable** - Request''s payload validation fails.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error422Response'
+    '401':
+      description: '**Unauthorized** - Your credentials were invalid. It may be that the token you''ve used has expired. Try re-authenticating with valid or updated credentials and retry this request.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error401Response'
+    '404':
+      description: '**Not found** - The resource that you are requesting cannot be found.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error404Response'
+  parameters:
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      description: It helps preventing duplicates in your `POST` requests. It is recommend using a **UUID** for the key, however you may use any other unique identifier you choose.
+      required: true
+      schema:
+        type: string
+        maxLength: 160
+        example: 85136c79cbf9fe36bb9d05d0639c70c265c18d37
     XVoltApiVersion:
       name: X-Volt-Api-Version
       in: header
@@ -698,15 +697,6 @@ components:
         example: 1
         enum:
         - 1
-    IdempotencyKey:
-      name: Idempotency-Key
-      in: header
-      description: It helps preventing duplicates in your `POST` requests. It is recommend using a **UUID** for the key, however you may use any other unique identifier you choose.
-      required: true
-      schema:
-        type: string
-        maxLength: 160
-        example: 85136c79cbf9fe36bb9d05d0639c70c265c18d37
     PageParam:
       name: page
       in: query
@@ -715,6 +705,16 @@ components:
         type: integer
         minimum: 1
         default: 1
+    LimitParam:
+      name: limit
+      in: query
+      description: Number of items to return per page (max 100).
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 25
   securitySchemes:
     BearerAuth:
       type: http
