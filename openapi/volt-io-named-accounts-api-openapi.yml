@@ -112,40 +112,6 @@ paths:
           $ref: '#/components/responses/500'
 components:
   schemas:
-    Communication:
-      type: object
-      properties:
-        notifications:
-          type: object
-          description: Settings for webhook notifications delivery.
-          properties:
-            url:
-              type: string
-              pattern: ^https?://[^ ]+$
-              description: URL where the notifications (webhooks) are going to be sent when the transaction status changes. This value will take precedence over Fuzebox configuration. Provide a value here only if you need to overwrite it. Note that a default notifications URL must be configured in Fuzebox for notifications to be delivered; if it is not configured, no notification will be sent even when this overwrite URL is provided.
-              example: https://mywebsite.com/webhooks
-    Error404Response:
-      type: object
-      description: Error response for HTTP 404 Not Found.
-      properties:
-        code:
-          type: string
-          description: Error code.
-          enum:
-          - RESOURCE_NOT_FOUND
-        message:
-          type: string
-          description: Error message.
-      required:
-      - code
-      - message
-    NamedAccountOrderStatusEnum:
-      type: string
-      description: Current status of the named account order
-      enum:
-      - PROCESSING
-      - COMPLETED
-      - FAILED
     ValidationErrorDetail:
       type: object
       description: Details about a specific validation error.
@@ -158,102 +124,6 @@ components:
         message:
           type: string
           description: Human-readable message about constraint violation.
-    Error409Response:
-      type: object
-      description: Error response for HTTP 409 Conflict.
-      properties:
-        code:
-          type: string
-          description: Error code.
-          enum:
-          - CONFLICT
-          - IDEMPOTENCY_CONFLICT
-          - RESOURCE_NOT_MODIFIABLE
-        message:
-          type: string
-          description: Error message.
-      required:
-      - code
-      - message
-    NamedAccountOrderRequest:
-      type: object
-      description: Request to create a named account from an approved onboarding.
-      required:
-      - onboardingEntityId
-      - currency
-      properties:
-        onboardingEntityId:
-          type: string
-          format: uuid
-          description: ID of the approved onboarding entity
-        currency:
-          $ref: '#/components/schemas/CurrencyCode'
-        communication:
-          $ref: '#/components/schemas/Communication'
-    Error500Response:
-      type: object
-      description: Error response for HTTP 500 Internal Server Error.
-      properties:
-        code:
-          type: string
-          description: Error code.
-          enum:
-          - INTERNAL_SERVER_ERROR
-        message:
-          type: string
-          description: Error message.
-      required:
-      - code
-      - message
-    CurrencyCode:
-      type: string
-      description: Three-letter ISO 4217 currency code.
-      example: EUR
-      pattern: ^[A-Z]{3}$
-    Error400Response:
-      type: object
-      description: Error response for HTTP 400 Bad Request.
-      properties:
-        code:
-          type: string
-          description: Error code.
-          enum:
-          - BAD_REQUEST
-          - INVALID_PATH_VARIABLE
-          - MISSING_HTTP_HEADER
-          - INVALID_HTTP_HEADER
-          - MALFORMED_PATH_PARAM
-          - MISSING_QUERY_PARAM
-          - INVALID_QUERY_PARAM
-          - MALFORMED_QUERY_PARAM
-          - CONFIGURATION_ERROR
-        message:
-          type: string
-          description: Error message.
-      required:
-      - code
-      - message
-    Error422Response:
-      type: object
-      description: Error response for HTTP 422 Unprocessable Entity.
-      properties:
-        code:
-          type: string
-          description: Error code.
-          enum:
-          - VALIDATION_FAILURE
-        message:
-          type: string
-          description: Error message.
-        errors:
-          type: array
-          description: Field validation errors.
-          items:
-            $ref: '#/components/schemas/ValidationErrorDetail'
-      required:
-      - code
-      - message
-      - errors
     Error403Response:
       type: object
       description: Error response for HTTP 403 Forbidden.
@@ -269,33 +139,6 @@ components:
       required:
       - code
       - message
-    Error401Response:
-      type: object
-      description: Error response for HTTP 401 Unauthorized.
-      properties:
-        code:
-          type: string
-          description: Error code.
-          enum:
-          - UNAUTHORISED
-        message:
-          type: string
-          description: Error message.
-      required:
-      - code
-      - message
-    XVoltTestingScenario:
-      type: string
-      enum:
-      - PAYOUT_REJECTED
-      - ACCOUNT_HOLDER_VERIFICATION_CLOSE_MATCH
-      - ACCOUNT_HOLDER_VERIFICATION_NO_MATCH
-      - ACCOUNT_HOLDER_VERIFICATION_ERROR
-      - ONBOARDING_REJECTED
-      - ONBOARDING_ADDITIONAL_INFO_REQUIRED
-      - ONBOARDING_ADDITIONAL_INFO_REQUIRED_NAME_MISMATCH
-      - ONBOARDING_EXPIRED
-      - ORDER_NAMED_ACCOUNTS_FAILED
     NamedAccountOrderDetails:
       type: object
       description: Named account order status and details.
@@ -327,15 +170,190 @@ components:
           type: string
           format: date-time
           description: Timestamp when the account was created
+    Error401Response:
+      type: object
+      description: Error response for HTTP 401 Unauthorized.
+      properties:
+        code:
+          type: string
+          description: Error code.
+          enum:
+          - UNAUTHORISED
+        message:
+          type: string
+          description: Error message.
+      required:
+      - code
+      - message
+    Error400Response:
+      type: object
+      description: Error response for HTTP 400 Bad Request.
+      properties:
+        code:
+          type: string
+          description: Error code.
+          enum:
+          - BAD_REQUEST
+          - INVALID_PATH_VARIABLE
+          - MISSING_HTTP_HEADER
+          - INVALID_HTTP_HEADER
+          - MALFORMED_PATH_PARAM
+          - MISSING_QUERY_PARAM
+          - INVALID_QUERY_PARAM
+          - MALFORMED_QUERY_PARAM
+          - CONFIGURATION_ERROR
+        message:
+          type: string
+          description: Error message.
+      required:
+      - code
+      - message
+    Error500Response:
+      type: object
+      description: Error response for HTTP 500 Internal Server Error.
+      properties:
+        code:
+          type: string
+          description: Error code.
+          enum:
+          - INTERNAL_SERVER_ERROR
+        message:
+          type: string
+          description: Error message.
+      required:
+      - code
+      - message
+    Error404Response:
+      type: object
+      description: Error response for HTTP 404 Not Found.
+      properties:
+        code:
+          type: string
+          description: Error code.
+          enum:
+          - RESOURCE_NOT_FOUND
+        message:
+          type: string
+          description: Error message.
+      required:
+      - code
+      - message
+    XVoltTestingScenario:
+      type: string
+      enum:
+      - PAYOUT_REJECTED
+      - ACCOUNT_HOLDER_VERIFICATION_CLOSE_MATCH
+      - ACCOUNT_HOLDER_VERIFICATION_NO_MATCH
+      - ACCOUNT_HOLDER_VERIFICATION_ERROR
+      - ONBOARDING_REJECTED
+      - ONBOARDING_ADDITIONAL_INFO_REQUIRED
+      - ONBOARDING_ADDITIONAL_INFO_REQUIRED_NAME_MISMATCH
+      - ONBOARDING_EXPIRED
+      - ORDER_NAMED_ACCOUNTS_FAILED
     ValidationErrorType:
       $ref: ./error-common.yaml#/components/schemas/ValidationErrorType
+    CurrencyCode:
+      type: string
+      description: Three-letter ISO 4217 currency code.
+      example: EUR
+      pattern: ^[A-Z]{3}$
+    Error422Response:
+      type: object
+      description: Error response for HTTP 422 Unprocessable Entity.
+      properties:
+        code:
+          type: string
+          description: Error code.
+          enum:
+          - VALIDATION_FAILURE
+        message:
+          type: string
+          description: Error message.
+        errors:
+          type: array
+          description: Field validation errors.
+          items:
+            $ref: '#/components/schemas/ValidationErrorDetail'
+      required:
+      - code
+      - message
+      - errors
+    Communication:
+      type: object
+      properties:
+        notifications:
+          type: object
+          description: Settings for webhook notifications delivery.
+          properties:
+            url:
+              type: string
+              pattern: ^https?://[^ ]+$
+              description: URL where the notifications (webhooks) are going to be sent when the transaction status changes. This value will take precedence over Fuzebox configuration. Provide a value here only if you need to overwrite it. Note that a default notifications URL must be configured in Fuzebox for notifications to be delivered; if it is not configured, no notification will be sent even when this overwrite URL is provided.
+              example: https://mywebsite.com/webhooks
+    Error409Response:
+      type: object
+      description: Error response for HTTP 409 Conflict.
+      properties:
+        code:
+          type: string
+          description: Error code.
+          enum:
+          - CONFLICT
+          - IDEMPOTENCY_CONFLICT
+          - RESOURCE_NOT_MODIFIABLE
+        message:
+          type: string
+          description: Error message.
+      required:
+      - code
+      - message
+    NamedAccountOrderStatusEnum:
+      type: string
+      description: Current status of the named account order
+      enum:
+      - PROCESSING
+      - COMPLETED
+      - FAILED
+    NamedAccountOrderRequest:
+      type: object
+      description: Request to create a named account from an approved onboarding.
+      required:
+      - onboardingEntityId
+      - currency
+      properties:
+        onboardingEntityId:
+          type: string
+          format: uuid
+          description: ID of the approved onboarding entity
+        currency:
+          $ref: '#/components/schemas/CurrencyCode'
+        communication:
+          $ref: '#/components/schemas/Communication'
   responses:
+    '500':
+      description: '**Internal server error** - Something went wrong and request cannot be processed due to server error. Message will contain trace ID and timestamp, which allows to investigate what went wrong.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error500Response'
     '401':
       description: '**Unauthorized** - Your credentials were invalid. It may be that the token you''ve used has expired. Try re-authenticating with valid or updated credentials and retry this request.'
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Error401Response'
+    '404':
+      description: '**Not found** - The resource that you are requesting cannot be found.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error404Response'
+    '422':
+      description: '**Unprocessable** - Request''s payload validation fails.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error422Response'
     '409':
       description: '**Conflict** - Modification of a resource is not possible, because current state of it does not allow it. Or `Idempotency-Key` was already used.'
       content:
@@ -354,25 +372,15 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Error403Response'
-    '500':
-      description: '**Internal server error** - Something went wrong and request cannot be processed due to server error. Message will contain trace ID and timestamp, which allows to investigate what went wrong.'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error500Response'
-    '422':
-      description: '**Unprocessable** - Request''s payload validation fails.'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error422Response'
-    '404':
-      description: '**Not found** - The resource that you are requesting cannot be found.'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error404Response'
   examples:
+    NamedAccountOrderFailedExample:
+      value:
+        id: order-5678-90ab-cdef-1234567890ab
+        onboardingEntityId: a1b2c3d4-5678-90ab-cdef-1234567890ab
+        status: FAILED
+        statusReason: Account creation failed due to banking provider error
+        createdAt: '2025-12-03T15:00:00Z'
+        completedAt: null
     NamedAccountOrderCompletedExample:
       value:
         id: order-5678-90ab-cdef-1234567890ab
@@ -390,15 +398,14 @@ components:
         statusReason: null
         createdAt: '2025-12-03T15:00:00Z'
         completedAt: null
-    NamedAccountOrderFailedExample:
-      value:
-        id: order-5678-90ab-cdef-1234567890ab
-        onboardingEntityId: a1b2c3d4-5678-90ab-cdef-1234567890ab
-        status: FAILED
-        statusReason: Account creation failed due to banking provider error
-        createdAt: '2025-12-03T15:00:00Z'
-        completedAt: null
   parameters:
+    XVoltTestingScenario:
+      name: X-Volt-Testing-Scenario
+      in: header
+      description: '[SANDBOX ONLY] used to trigger specific transaction failure or verification mocks.'
+      required: false
+      schema:
+        $ref: '#/components/schemas/XVoltTestingScenario'
     IdempotencyKey:
       name: Idempotency-Key
       in: header
@@ -408,13 +415,6 @@ components:
         type: string
         maxLength: 160
         example: 85136c79cbf9fe36bb9d05d0639c70c265c18d37
-    XVoltTestingScenario:
-      name: X-Volt-Testing-Scenario
-      in: header
-      description: '[SANDBOX ONLY] used to trigger specific transaction failure or verification mocks.'
-      required: false
-      schema:
-        $ref: '#/components/schemas/XVoltTestingScenario'
     XVoltApiVersion:
       name: X-Volt-Api-Version
       in: header

@@ -317,96 +317,6 @@ paths:
           $ref: '#/components/responses/500'
 components:
   schemas:
-    Communication:
-      type: object
-      properties:
-        notifications:
-          type: object
-          description: Settings for webhook notifications delivery.
-          properties:
-            url:
-              type: string
-              pattern: ^https?://[^ ]+$
-              description: URL where the notifications (webhooks) are going to be sent when the transaction status changes. This value will take precedence over Fuzebox configuration. Provide a value here only if you need to overwrite it. Note that a default notifications URL must be configured in Fuzebox for notifications to be delivered; if it is not configured, no notification will be sent even when this overwrite URL is provided.
-              example: https://mywebsite.com/webhooks
-    Error404Response:
-      type: object
-      description: Error response for HTTP 404 Not Found.
-      properties:
-        code:
-          type: string
-          description: Error code.
-          enum:
-          - RESOURCE_NOT_FOUND
-        message:
-          type: string
-          description: Error message.
-      required:
-      - code
-      - message
-    Identifications:
-      description: A list of one or more account identifiers.
-      type: array
-      items:
-        $ref: accounts-common.yaml#/components/schemas/AccountIdentifier
-      minItems: 1
-    AliasCloseRequest:
-      type: object
-      properties:
-        communication:
-          $ref: '#/components/schemas/Communication'
-    Error406Response:
-      type: object
-      description: API is not able to generate a response in the format defined in the Accept HTTP request header.
-      properties:
-        code:
-          type: string
-          description: Error code.
-          enum:
-          - MEDIA_TYPE_NOT_ACCEPTABLE
-        message:
-          type: string
-          description: Error message.
-      required:
-      - code
-      - message
-    AliasOrderLinks:
-      type: object
-      properties:
-        self:
-          $ref: '#/components/schemas/LinkObject'
-        aliases:
-          $ref: '#/components/schemas/LinkObject'
-    Error415Response:
-      type: object
-      description: Request contains data in an unsupported content type.
-      properties:
-        code:
-          type: string
-          description: Error code.
-          enum:
-          - UNSUPPORTED_MEDIA_TYPE
-        message:
-          type: string
-          description: Error message.
-      required:
-      - code
-      - message
-    LinkObject:
-      type: object
-      properties:
-        href:
-          type: string
-          format: uri
-        method:
-          type: string
-          enum:
-          - GET
-          - POST
-          - PATCH
-          - DELETE
-      required:
-      - href
     ValidationErrorDetail:
       type: object
       description: Details about a specific validation error.
@@ -419,167 +329,6 @@ components:
         message:
           type: string
           description: Human-readable message about constraint violation.
-    Error405Response:
-      type: object
-      description: HTTP method is not supported for this URL.
-      properties:
-        code:
-          type: string
-          description: Error code.
-          enum:
-          - METHOD_NOT_SUPPORTED
-        message:
-          type: string
-          description: Error message.
-      required:
-      - code
-      - message
-    Error409Response:
-      type: object
-      description: Error response for HTTP 409 Conflict.
-      properties:
-        code:
-          type: string
-          description: Error code.
-          enum:
-          - CONFLICT
-          - IDEMPOTENCY_CONFLICT
-          - RESOURCE_NOT_MODIFIABLE
-        message:
-          type: string
-          description: Error message.
-      required:
-      - code
-      - message
-    Error500Response:
-      type: object
-      description: Error response for HTTP 500 Internal Server Error.
-      properties:
-        code:
-          type: string
-          description: Error code.
-          enum:
-          - INTERNAL_SERVER_ERROR
-        message:
-          type: string
-          description: Error message.
-      required:
-      - code
-      - message
-    CurrencyCode:
-      type: string
-      description: Three-letter ISO 4217 currency code.
-      example: EUR
-      pattern: ^[A-Z]{3}$
-    Error400Response:
-      type: object
-      description: Error response for HTTP 400 Bad Request.
-      properties:
-        code:
-          type: string
-          description: Error code.
-          enum:
-          - BAD_REQUEST
-          - INVALID_PATH_VARIABLE
-          - MISSING_HTTP_HEADER
-          - INVALID_HTTP_HEADER
-          - MALFORMED_PATH_PARAM
-          - MISSING_QUERY_PARAM
-          - INVALID_QUERY_PARAM
-          - MALFORMED_QUERY_PARAM
-          - CONFIGURATION_ERROR
-        message:
-          type: string
-          description: Error message.
-      required:
-      - code
-      - message
-    AliasesOrderRequest:
-      type: object
-      properties:
-        accountId:
-          type: string
-          format: uuid
-          description: The unique identifier of the account.
-        count:
-          type: integer
-          minimum: 1
-          maximum: 1000
-          description: Number of aliases to create.
-        communication:
-          $ref: '#/components/schemas/Communication'
-      required:
-      - accountId
-      - count
-    AliasOrderStatusEnum:
-      type: string
-      description: Current status of the alias order
-      enum:
-      - PROCESSING
-      - COMPLETED
-      - FAILED
-    AliasMinimalDetails:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        currency:
-          $ref: '#/components/schemas/CurrencyCode'
-        identifications:
-          $ref: '#/components/schemas/Identifications'
-        name:
-          type: string
-        customerId:
-          type: string
-          format: uuid
-        accountId:
-          type: string
-          format: uuid
-        orderId:
-          type: string
-          format: uuid
-        active:
-          type: boolean
-    ChangeAliasStateRequest:
-      type: object
-      properties:
-        active:
-          type: boolean
-      required:
-      - active
-    Error422Response:
-      type: object
-      description: Error response for HTTP 422 Unprocessable Entity.
-      properties:
-        code:
-          type: string
-          description: Error code.
-          enum:
-          - VALIDATION_FAILURE
-        message:
-          type: string
-          description: Error message.
-        errors:
-          type: array
-          description: Field validation errors.
-          items:
-            $ref: '#/components/schemas/ValidationErrorDetail'
-      required:
-      - code
-      - message
-      - errors
-    AliasDetails:
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/AliasMinimalDetails'
-      - type: object
-        properties:
-          _links:
-            type: object
-            properties:
-              self:
-                $ref: '#/components/schemas/LinkObject'
     Error403Response:
       type: object
       description: Error response for HTTP 403 Forbidden.
@@ -610,8 +359,166 @@ components:
       required:
       - code
       - message
+    Error400Response:
+      type: object
+      description: Error response for HTTP 400 Bad Request.
+      properties:
+        code:
+          type: string
+          description: Error code.
+          enum:
+          - BAD_REQUEST
+          - INVALID_PATH_VARIABLE
+          - MISSING_HTTP_HEADER
+          - INVALID_HTTP_HEADER
+          - MALFORMED_PATH_PARAM
+          - MISSING_QUERY_PARAM
+          - INVALID_QUERY_PARAM
+          - MALFORMED_QUERY_PARAM
+          - CONFIGURATION_ERROR
+        message:
+          type: string
+          description: Error message.
+      required:
+      - code
+      - message
+    LinkObject:
+      type: object
+      properties:
+        href:
+          type: string
+          format: uri
+        method:
+          type: string
+          enum:
+          - GET
+          - POST
+          - PATCH
+          - DELETE
+      required:
+      - href
+    AliasOrderLinks:
+      type: object
+      properties:
+        self:
+          $ref: '#/components/schemas/LinkObject'
+        aliases:
+          $ref: '#/components/schemas/LinkObject'
+    Error404Response:
+      type: object
+      description: Error response for HTTP 404 Not Found.
+      properties:
+        code:
+          type: string
+          description: Error code.
+          enum:
+          - RESOURCE_NOT_FOUND
+        message:
+          type: string
+          description: Error message.
+      required:
+      - code
+      - message
+    Error500Response:
+      type: object
+      description: Error response for HTTP 500 Internal Server Error.
+      properties:
+        code:
+          type: string
+          description: Error code.
+          enum:
+          - INTERNAL_SERVER_ERROR
+        message:
+          type: string
+          description: Error message.
+      required:
+      - code
+      - message
     ValidationErrorType:
       $ref: ./error-common.yaml#/components/schemas/ValidationErrorType
+    AliasOrderStatusEnum:
+      type: string
+      description: Current status of the alias order
+      enum:
+      - PROCESSING
+      - COMPLETED
+      - FAILED
+    CurrencyCode:
+      type: string
+      description: Three-letter ISO 4217 currency code.
+      example: EUR
+      pattern: ^[A-Z]{3}$
+    Error422Response:
+      type: object
+      description: Error response for HTTP 422 Unprocessable Entity.
+      properties:
+        code:
+          type: string
+          description: Error code.
+          enum:
+          - VALIDATION_FAILURE
+        message:
+          type: string
+          description: Error message.
+        errors:
+          type: array
+          description: Field validation errors.
+          items:
+            $ref: '#/components/schemas/ValidationErrorDetail'
+      required:
+      - code
+      - message
+      - errors
+    Error406Response:
+      type: object
+      description: API is not able to generate a response in the format defined in the Accept HTTP request header.
+      properties:
+        code:
+          type: string
+          description: Error code.
+          enum:
+          - MEDIA_TYPE_NOT_ACCEPTABLE
+        message:
+          type: string
+          description: Error message.
+      required:
+      - code
+      - message
+    Communication:
+      type: object
+      properties:
+        notifications:
+          type: object
+          description: Settings for webhook notifications delivery.
+          properties:
+            url:
+              type: string
+              pattern: ^https?://[^ ]+$
+              description: URL where the notifications (webhooks) are going to be sent when the transaction status changes. This value will take precedence over Fuzebox configuration. Provide a value here only if you need to overwrite it. Note that a default notifications URL must be configured in Fuzebox for notifications to be delivered; if it is not configured, no notification will be sent even when this overwrite URL is provided.
+              example: https://mywebsite.com/webhooks
+    Error409Response:
+      type: object
+      description: Error response for HTTP 409 Conflict.
+      properties:
+        code:
+          type: string
+          description: Error code.
+          enum:
+          - CONFLICT
+          - IDEMPOTENCY_CONFLICT
+          - RESOURCE_NOT_MODIFIABLE
+        message:
+          type: string
+          description: Error message.
+      required:
+      - code
+      - message
+    Identifications:
+      description: A list of one or more account identifiers.
+      type: array
+      items:
+        $ref: accounts-common.yaml#/components/schemas/AccountIdentifier
+      minItems: 1
     AliasOrderDetails:
       type: object
       description: Alias order status and details.
@@ -644,7 +551,169 @@ components:
           description: Timestamp when the order reached a terminal state
         _links:
           $ref: '#/components/schemas/AliasOrderLinks'
+    Error415Response:
+      type: object
+      description: Request contains data in an unsupported content type.
+      properties:
+        code:
+          type: string
+          description: Error code.
+          enum:
+          - UNSUPPORTED_MEDIA_TYPE
+        message:
+          type: string
+          description: Error message.
+      required:
+      - code
+      - message
+    AliasesOrderRequest:
+      type: object
+      properties:
+        accountId:
+          type: string
+          format: uuid
+          description: The unique identifier of the account.
+        count:
+          type: integer
+          minimum: 1
+          maximum: 1000
+          description: Number of aliases to create.
+        communication:
+          $ref: '#/components/schemas/Communication'
+      required:
+      - accountId
+      - count
+    AliasCloseRequest:
+      type: object
+      properties:
+        communication:
+          $ref: '#/components/schemas/Communication'
+    AliasDetails:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/AliasMinimalDetails'
+      - type: object
+        properties:
+          _links:
+            type: object
+            properties:
+              self:
+                $ref: '#/components/schemas/LinkObject'
+    AliasMinimalDetails:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        currency:
+          $ref: '#/components/schemas/CurrencyCode'
+        identifications:
+          $ref: '#/components/schemas/Identifications'
+        name:
+          type: string
+        customerId:
+          type: string
+          format: uuid
+        accountId:
+          type: string
+          format: uuid
+        orderId:
+          type: string
+          format: uuid
+        active:
+          type: boolean
+    ChangeAliasStateRequest:
+      type: object
+      properties:
+        active:
+          type: boolean
+      required:
+      - active
+    Error405Response:
+      type: object
+      description: HTTP method is not supported for this URL.
+      properties:
+        code:
+          type: string
+          description: Error code.
+          enum:
+          - METHOD_NOT_SUPPORTED
+        message:
+          type: string
+          description: Error message.
+      required:
+      - code
+      - message
+  responses:
+    '406':
+      description: '**Media-type not acceptable** - API is not able to generate a response in the format defined in the Accept HTTP request header.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error406Response'
+    '500':
+      description: '**Internal server error** - Something went wrong and request cannot be processed due to server error. Message will contain trace ID and timestamp, which allows to investigate what went wrong.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error500Response'
+    '401':
+      description: '**Unauthorized** - Your credentials were invalid. It may be that the token you''ve used has expired. Try re-authenticating with valid or updated credentials and retry this request.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error401Response'
+    '404':
+      description: '**Not found** - The resource that you are requesting cannot be found.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error404Response'
+    '422':
+      description: '**Unprocessable** - Request''s payload validation fails.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error422Response'
+    '409':
+      description: '**Conflict** - Modification of a resource is not possible, because current state of it does not allow it. Or `Idempotency-Key` was already used.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error409Response'
+    '415':
+      description: '**Unsupported media-type** - Request contains data in an unsupported content type.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error415Response'
+    '400':
+      description: '**Bad request** - Request you sent is invalid or malformed. Response will contain a description of the actual problem.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error400Response'
+    '405':
+      description: '**Method not supported** - HTTP method is not supported for this URL.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error405Response'
+    '403':
+      description: '**Access denied** - Although your credentials are correct, your access to this section of the API has been disabled or limited. Subsequent requests to this endpoint will not be processed.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error403Response'
   parameters:
+    PageParam:
+      name: page
+      in: query
+      description: Page index for pagination.
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
     LimitParam:
       name: limit
       in: query
@@ -664,14 +733,6 @@ components:
         type: string
         maxLength: 160
         example: 85136c79cbf9fe36bb9d05d0639c70c265c18d37
-    PageParam:
-      name: page
-      in: query
-      description: Page index for pagination.
-      schema:
-        type: integer
-        minimum: 1
-        default: 1
     XVoltApiVersion:
       name: X-Volt-Api-Version
       in: header
@@ -682,83 +743,22 @@ components:
         example: 1
         enum:
         - 1
-  responses:
-    '401':
-      description: '**Unauthorized** - Your credentials were invalid. It may be that the token you''ve used has expired. Try re-authenticating with valid or updated credentials and retry this request.'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error401Response'
-    '409':
-      description: '**Conflict** - Modification of a resource is not possible, because current state of it does not allow it. Or `Idempotency-Key` was already used.'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error409Response'
-    '400':
-      description: '**Bad request** - Request you sent is invalid or malformed. Response will contain a description of the actual problem.'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error400Response'
-    '405':
-      description: '**Method not supported** - HTTP method is not supported for this URL.'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error405Response'
-    '403':
-      description: '**Access denied** - Although your credentials are correct, your access to this section of the API has been disabled or limited. Subsequent requests to this endpoint will not be processed.'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error403Response'
-    '406':
-      description: '**Media-type not acceptable** - API is not able to generate a response in the format defined in the Accept HTTP request header.'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error406Response'
-    '500':
-      description: '**Internal server error** - Something went wrong and request cannot be processed due to server error. Message will contain trace ID and timestamp, which allows to investigate what went wrong.'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error500Response'
-    '422':
-      description: '**Unprocessable** - Request''s payload validation fails.'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error422Response'
-    '415':
-      description: '**Unsupported media-type** - Request contains data in an unsupported content type.'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error415Response'
-    '404':
-      description: '**Not found** - The resource that you are requesting cannot be found.'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error404Response'
   headers:
     PaginationPage:
       description: The current page number.
       schema:
         type: integer
         example: 1
-    PaginationPageCount:
-      description: Total number of available pages.
-      schema:
-        type: integer
-        example: 6
     PaginationTotalItems:
       description: The absolute count of items matching the query.
       schema:
         type: integer
         example: 150
+    PaginationPageCount:
+      description: Total number of available pages.
+      schema:
+        type: integer
+        example: 6
     PaginationLimit:
       description: Number of items per page.
       schema:
