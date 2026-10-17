@@ -111,34 +111,47 @@ paths:
         '500':
           $ref: '#/components/responses/500'
 components:
+  examples:
+    NamedAccountOrderFailedExample:
+      value:
+        id: order-5678-90ab-cdef-1234567890ab
+        onboardingEntityId: a1b2c3d4-5678-90ab-cdef-1234567890ab
+        status: FAILED
+        statusReason: Account creation failed due to banking provider error
+        createdAt: '2025-12-03T15:00:00Z'
+        completedAt: null
+    NamedAccountOrderCompletedExample:
+      value:
+        id: order-5678-90ab-cdef-1234567890ab
+        onboardingEntityId: a1b2c3d4-5678-90ab-cdef-1234567890ab
+        accountId: 7523a8d3-70a9-4448-822a-ba1a38e0b715
+        status: COMPLETED
+        statusReason: null
+        createdAt: '2025-12-03T15:00:00Z'
+        completedAt: '2025-12-03T15:05:00Z'
+    NamedAccountOrderProcessingExample:
+      value:
+        id: order-5678-90ab-cdef-1234567890ab
+        onboardingEntityId: a1b2c3d4-5678-90ab-cdef-1234567890ab
+        status: PROCESSING
+        statusReason: null
+        createdAt: '2025-12-03T15:00:00Z'
+        completedAt: null
   schemas:
-    ValidationErrorDetail:
+    ValidationErrorType:
+      $ref: ./error-common.yaml#/components/schemas/ValidationErrorType
+    Communication:
       type: object
-      description: Details about a specific validation error.
       properties:
-        type:
-          $ref: '#/components/schemas/ValidationErrorType'
-        propertyPath:
-          type: string
-          description: Points to the specific field or property in the incoming request that violated the validation rule.
-        message:
-          type: string
-          description: Human-readable message about constraint violation.
-    Error403Response:
-      type: object
-      description: Error response for HTTP 403 Forbidden.
-      properties:
-        code:
-          type: string
-          description: Error code.
-          enum:
-          - ACCESS_DENIED
-        message:
-          type: string
-          description: Error message.
-      required:
-      - code
-      - message
+        notifications:
+          type: object
+          description: Settings for webhook notifications delivery.
+          properties:
+            url:
+              type: string
+              pattern: ^https?://[^ ]+$
+              description: URL where the notifications (webhooks) are going to be sent when the transaction status changes. This value will take precedence over Fuzebox configuration. Provide a value here only if you need to overwrite it. Note that a default notifications URL must be configured in Fuzebox for notifications to be delivered; if it is not configured, no notification will be sent even when this overwrite URL is provided.
+              example: https://mywebsite.com/webhooks
     NamedAccountOrderDetails:
       type: object
       description: Named account order status and details.
@@ -170,21 +183,34 @@ components:
           type: string
           format: date-time
           description: Timestamp when the account was created
-    Error401Response:
+    Error422Response:
       type: object
-      description: Error response for HTTP 401 Unauthorized.
+      description: Error response for HTTP 422 Unprocessable Entity.
       properties:
         code:
           type: string
           description: Error code.
           enum:
-          - UNAUTHORISED
+          - VALIDATION_FAILURE
         message:
           type: string
           description: Error message.
+        errors:
+          type: array
+          description: Field validation errors.
+          items:
+            $ref: '#/components/schemas/ValidationErrorDetail'
       required:
       - code
       - message
+      - errors
+    NamedAccountOrderStatusEnum:
+      type: string
+      description: Current status of the named account order
+      enum:
+      - PROCESSING
+      - COMPLETED
+      - FAILED
     Error400Response:
       type: object
       description: Error response for HTTP 400 Bad Request.
@@ -202,21 +228,6 @@ components:
           - INVALID_QUERY_PARAM
           - MALFORMED_QUERY_PARAM
           - CONFIGURATION_ERROR
-        message:
-          type: string
-          description: Error message.
-      required:
-      - code
-      - message
-    Error500Response:
-      type: object
-      description: Error response for HTTP 500 Internal Server Error.
-      properties:
-        code:
-          type: string
-          description: Error code.
-          enum:
-          - INTERNAL_SERVER_ERROR
         message:
           type: string
           description: Error message.
@@ -250,46 +261,21 @@ components:
       - ONBOARDING_ADDITIONAL_INFO_REQUIRED_NAME_MISMATCH
       - ONBOARDING_EXPIRED
       - ORDER_NAMED_ACCOUNTS_FAILED
-    ValidationErrorType:
-      $ref: ./error-common.yaml#/components/schemas/ValidationErrorType
-    CurrencyCode:
-      type: string
-      description: Three-letter ISO 4217 currency code.
-      example: EUR
-      pattern: ^[A-Z]{3}$
-    Error422Response:
+    Error401Response:
       type: object
-      description: Error response for HTTP 422 Unprocessable Entity.
+      description: Error response for HTTP 401 Unauthorized.
       properties:
         code:
           type: string
           description: Error code.
           enum:
-          - VALIDATION_FAILURE
+          - UNAUTHORISED
         message:
           type: string
           description: Error message.
-        errors:
-          type: array
-          description: Field validation errors.
-          items:
-            $ref: '#/components/schemas/ValidationErrorDetail'
       required:
       - code
       - message
-      - errors
-    Communication:
-      type: object
-      properties:
-        notifications:
-          type: object
-          description: Settings for webhook notifications delivery.
-          properties:
-            url:
-              type: string
-              pattern: ^https?://[^ ]+$
-              description: URL where the notifications (webhooks) are going to be sent when the transaction status changes. This value will take precedence over Fuzebox configuration. Provide a value here only if you need to overwrite it. Note that a default notifications URL must be configured in Fuzebox for notifications to be delivered; if it is not configured, no notification will be sent even when this overwrite URL is provided.
-              example: https://mywebsite.com/webhooks
     Error409Response:
       type: object
       description: Error response for HTTP 409 Conflict.
@@ -307,13 +293,33 @@ components:
       required:
       - code
       - message
-    NamedAccountOrderStatusEnum:
-      type: string
-      description: Current status of the named account order
-      enum:
-      - PROCESSING
-      - COMPLETED
-      - FAILED
+    Error500Response:
+      type: object
+      description: Error response for HTTP 500 Internal Server Error.
+      properties:
+        code:
+          type: string
+          description: Error code.
+          enum:
+          - INTERNAL_SERVER_ERROR
+        message:
+          type: string
+          description: Error message.
+      required:
+      - code
+      - message
+    ValidationErrorDetail:
+      type: object
+      description: Details about a specific validation error.
+      properties:
+        type:
+          $ref: '#/components/schemas/ValidationErrorType'
+        propertyPath:
+          type: string
+          description: Points to the specific field or property in the incoming request that violated the validation rule.
+        message:
+          type: string
+          description: Human-readable message about constraint violation.
     NamedAccountOrderRequest:
       type: object
       description: Request to create a named account from an approved onboarding.
@@ -329,83 +335,70 @@ components:
           $ref: '#/components/schemas/CurrencyCode'
         communication:
           $ref: '#/components/schemas/Communication'
+    Error403Response:
+      type: object
+      description: Error response for HTTP 403 Forbidden.
+      properties:
+        code:
+          type: string
+          description: Error code.
+          enum:
+          - ACCESS_DENIED
+        message:
+          type: string
+          description: Error message.
+      required:
+      - code
+      - message
+    CurrencyCode:
+      type: string
+      description: Three-letter ISO 4217 currency code.
+      example: EUR
+      pattern: ^[A-Z]{3}$
   responses:
-    '500':
-      description: '**Internal server error** - Something went wrong and request cannot be processed due to server error. Message will contain trace ID and timestamp, which allows to investigate what went wrong.'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error500Response'
-    '401':
-      description: '**Unauthorized** - Your credentials were invalid. It may be that the token you''ve used has expired. Try re-authenticating with valid or updated credentials and retry this request.'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error401Response'
-    '404':
-      description: '**Not found** - The resource that you are requesting cannot be found.'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error404Response'
-    '422':
-      description: '**Unprocessable** - Request''s payload validation fails.'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error422Response'
     '409':
       description: '**Conflict** - Modification of a resource is not possible, because current state of it does not allow it. Or `Idempotency-Key` was already used.'
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Error409Response'
+    '422':
+      description: '**Unprocessable** - Request''s payload validation fails.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error422Response'
+    '401':
+      description: '**Unauthorized** - Your credentials were invalid. It may be that the token you''ve used has expired. Try re-authenticating with valid or updated credentials and retry this request.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error401Response'
+    '500':
+      description: '**Internal server error** - Something went wrong and request cannot be processed due to server error. Message will contain trace ID and timestamp, which allows to investigate what went wrong.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error500Response'
     '400':
       description: '**Bad request** - Request you sent is invalid or malformed. Response will contain a description of the actual problem.'
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Error400Response'
+    '404':
+      description: '**Not found** - The resource that you are requesting cannot be found.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error404Response'
     '403':
       description: '**Access denied** - Although your credentials are correct, your access to this section of the API has been disabled or limited. Subsequent requests to this endpoint will not be processed.'
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Error403Response'
-  examples:
-    NamedAccountOrderFailedExample:
-      value:
-        id: order-5678-90ab-cdef-1234567890ab
-        onboardingEntityId: a1b2c3d4-5678-90ab-cdef-1234567890ab
-        status: FAILED
-        statusReason: Account creation failed due to banking provider error
-        createdAt: '2025-12-03T15:00:00Z'
-        completedAt: null
-    NamedAccountOrderCompletedExample:
-      value:
-        id: order-5678-90ab-cdef-1234567890ab
-        onboardingEntityId: a1b2c3d4-5678-90ab-cdef-1234567890ab
-        accountId: 7523a8d3-70a9-4448-822a-ba1a38e0b715
-        status: COMPLETED
-        statusReason: null
-        createdAt: '2025-12-03T15:00:00Z'
-        completedAt: '2025-12-03T15:05:00Z'
-    NamedAccountOrderProcessingExample:
-      value:
-        id: order-5678-90ab-cdef-1234567890ab
-        onboardingEntityId: a1b2c3d4-5678-90ab-cdef-1234567890ab
-        status: PROCESSING
-        statusReason: null
-        createdAt: '2025-12-03T15:00:00Z'
-        completedAt: null
   parameters:
-    XVoltTestingScenario:
-      name: X-Volt-Testing-Scenario
-      in: header
-      description: '[SANDBOX ONLY] used to trigger specific transaction failure or verification mocks.'
-      required: false
-      schema:
-        $ref: '#/components/schemas/XVoltTestingScenario'
     IdempotencyKey:
       name: Idempotency-Key
       in: header
@@ -425,6 +418,13 @@ components:
         example: 1
         enum:
         - 1
+    XVoltTestingScenario:
+      name: X-Volt-Testing-Scenario
+      in: header
+      description: '[SANDBOX ONLY] used to trigger specific transaction failure or verification mocks.'
+      required: false
+      schema:
+        $ref: '#/components/schemas/XVoltTestingScenario'
   securitySchemes:
     BearerAuth:
       type: http
